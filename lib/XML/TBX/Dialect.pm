@@ -1,7 +1,7 @@
 package XML::TBX::Dialect;
 use strict;
 use warnings;
-use XML::TBX::Dialect::XCS;
+use TBX::XCS;
 use feature 'state';
 use File::Slurp;
 use Path::Tiny;
@@ -62,7 +62,7 @@ Sets the XCS of this dialect. Arguments are identical to those in C<XML::TBX::Di
 
 sub set_xcs {
     my ($self, @xcs_args) = @_;
-    my $xcs = XML::TBX::Dialect::XCS->new();
+    my $xcs = TBX::XCS->new();
     # print join ':', @xcs_args;
     $xcs->parse(@xcs_args);
     $self->{xcs} = $xcs;
