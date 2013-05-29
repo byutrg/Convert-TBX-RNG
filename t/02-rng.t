@@ -2,7 +2,7 @@
 use t::TestRNG;
 use Test::More 0.88;
 plan tests => 7;
-use XML::TBX::Dialect;
+use Convert::TBX::RNG qw(generate_rng);
 use XML::Jing;
 use TBX::Checker qw(check);
 use Path::Tiny;
@@ -20,11 +20,11 @@ my @checker_broken = qw( hiBad.tbx );
 for my $block(blocks){
 	note $block->name;
 	#create an RNG and write it to a temporary file
-	my $dialect = XML::TBX::Dialect->new();
+	# my $dialect = XML::TBX::Dialect->new();
 	my $xcs = $block->xcs
 		or next;
-	$dialect->set_xcs(file => path($corpus_dir, $xcs));
-	my $rng = $dialect->as_rng;
+	# $dialect->set_xcs(file => path($corpus_dir, $xcs));
+	my $rng = generate_rng(xcs_file => path($corpus_dir, $xcs));
 	my $tmp = File::Temp->new();
 	write_file($tmp, $rng);
 	# print $$rng;

@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Test::More 0.88;
 plan tests => 2;
-use XML::TBX::Dialect qw(core_structure_rng);
+use Convert::TBX::RNG qw(core_structure_rng);
 use XML::Jing;
 use TBX::Checker qw(check);
 use Path::Tiny;

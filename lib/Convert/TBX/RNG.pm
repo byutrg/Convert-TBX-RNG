@@ -1,4 +1,4 @@
-package XML::TBX::Dialect;
+package Convert::TBX::RNG;
 use strict;
 use warnings;
 use TBX::XCS;
@@ -11,7 +11,7 @@ use Data::Dumper;
 use XML::Twig;
 use File::ShareDir 'dist_dir';
 use Exporter::Easy (
-    OK => [ qw(core_structure_rng) ],#TODO: add others
+    OK => [ qw(generate_rng core_structure_rng) ],#TODO: add others
 );
 
 # VERSION
@@ -19,69 +19,40 @@ use Exporter::Easy (
 
 # ABSTRACT: Create new TBX dialects
 =head1 SYNOPSIS
-
-    my $dialect = XML::TBX::Dialect->new(
-        xcs => '/path/to/xcs'
-    );
-    print $dialect->as_rng();
+    use Convert::TBX::RNG qw(generate_rng);
+    my $rng = generate_rng(xcs_file => '/path/to/xcs');
+    print $$rng;
 
 =head1 DESCRIPTION
 
-This module allows you to create new resources to work with TBX dialects. Currently it only provides RNG generation from XCS information, but
-in the future we plan to add XSD generation and to allow tweaking the core structure DTD.
+This module creates RNG files for validating TBX dialects. Currently, the user
+can generate RNG using XCS files, but in the future there may be functionality
+for tweaking the core structure.
 
 =cut
 
-__PACKAGE__->new->_run unless caller;
-
-sub _run {
-    my ($application) = @_;
-    print { $application->{output_fh} }
-        $application->message;
-}
+#when used as a script: take an XCS file name and print an RNG
+print ${ generate_rng(xcs_file => $ARGV[0]) } unless caller;
 
 =head1 METHODS
 
-=head2 C<new>
+=head2 C<generate_rng>
 
-Creates a new instance of XML::TBX::Dialect.
+Creates an RNG representation of this dialect and returns it in a string pointer.
 
-=cut
-
-sub new {
-    my ($class) = @_;
-    my $self = bless {}, $class;
-    return $self;
-}
-
-=head2 C<new>
-
-Sets the XCS of this dialect. Arguments are identical to those in C<XML::TBX::Dialect::XCS::parse>.
+Currently one argument is requried: C<xcs_file>, which specifies the location of
+an XCS file which defines the desired dialect.
 
 =cut
 
-sub set_xcs {
-    my ($self, @xcs_args) = @_;
-    my $xcs = TBX::XCS->new();
-    # print join ':', @xcs_args;
-    $xcs->parse(@xcs_args);
-    $self->{xcs} = $xcs;
-    # print Dumper $self->{xcs}->get_languages();
-    return;
-}
-
-=head2 C<new>
-
-Creates an RNG representation of this dialect and returns it in a string pointer. The XCS must already be set.
-
-=cut
-
-sub as_rng {
-    my ($self) = @_;
-    my $xcs = $self->{xcs};
-    if(!$xcs){
-        croak "No XCS set yet! Can't create an RNG.";
+sub generate_rng {
+    my (%args) = @_;
+    if(! $args{xcs_file}){
+        croak "missing 'xcs_file' parameter";
     }
+    my $xcs = TBX::XCS->new();
+    $xcs->parse(file => $args{xcs_file});
+
     my $twig = new XML::Twig(
         pretty_print            => 'indented',
         output_encoding     => 'UTF-8',
@@ -176,6 +147,13 @@ sub core_structure_rng {
 sub _core_structure_rng_location {
     return path(dist_dir('XML-TBX-Dialect'),'TBXcoreStructV02.rng');
 }
+
+=head1 FUTURE WORK
+
+In the future we may provide functionality to tweak the TBX core structure.
+
+=head1 SEE ALSO
+
 
 1;
 
