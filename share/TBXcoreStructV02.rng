@@ -79,6 +79,27 @@
       <attribute name="type"/>
     </optional>
   </define>
+
+<!-- Everything but the type for most meta data categories -->
+  <define name="impIDLangTgtDtyp">
+    <optional>
+      <attribute name="id">
+        <data type="ID"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="xml:lang"/>
+    </optional>
+    <optional>
+      <attribute name="target">
+        <data type="IDREF"/>
+      </attribute>
+    </optional>
+    <optional>
+      <attribute name="datatype"/>
+    </optional>
+  </define>
+
   <define name="impIDLangTypTgtDtyp">
     <optional>
       <attribute name="id">

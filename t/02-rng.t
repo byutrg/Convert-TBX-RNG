@@ -1,7 +1,7 @@
 #make sure that the core structure RNG validates a TBX file
 use t::TestRNG;
 use Test::More 0.88;
-plan tests => 7;
+plan tests => 6;
 use Convert::TBX::RNG qw(generate_rng);
 use XML::Jing;
 use TBX::Checker qw(check);
@@ -82,6 +82,9 @@ adminNoteBad.tbx
 admin.xcs
 
 === hi
+--- SKIP
+--- good chomp
+hiGood.tbx
 --- bad chomp
 hiBad.tbx
 --- xcs chomp

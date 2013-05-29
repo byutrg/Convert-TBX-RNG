@@ -22,8 +22,8 @@
 					<tig>
 						<term>foo</term>
 						<adminGrp>
-							<admin type="annotatedNote">foo</admin>
-							<adminNote type="noteSource">bar</adminNote>
+							<admin type="annotatedNote" id="fluff" datatype="text" xml:lang="es" target="bar">fu</admin>
+							<adminNote type="noteSource" id="bar" datatype="text" xml:lang="en" target="fluff">bar</adminNote>
 						</adminGrp>
 					</tig>
 				</langSet>

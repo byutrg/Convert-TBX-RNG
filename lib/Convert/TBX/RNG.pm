@@ -12,7 +12,7 @@ use XML::Twig;
 use File::ShareDir 'dist_dir';
 use Exporter::Easy (
     OK => [ qw(generate_rng core_structure_rng) ],#TODO: add others
-);
+    );
 
 # VERSION
 
@@ -46,91 +46,127 @@ an XCS file which defines the desired dialect.
 =cut
 
 sub generate_rng {
-    my (%args) = @_;
-    if(! $args{xcs_file}){
-        croak "missing 'xcs_file' parameter";
-    }
-    my $xcs = TBX::XCS->new();
-    $xcs->parse(file => $args{xcs_file});
+  my (%args) = @_;
+  if(! $args{xcs_file}){
+    croak "missing 'xcs_file' parameter";
+  }
+  my $xcs = TBX::XCS->new();
+  $xcs->parse(file => $args{xcs_file});
 
-    my $twig = new XML::Twig(
-        pretty_print            => 'indented',
-        output_encoding     => 'UTF-8',
+  my $twig = new XML::Twig(
+    pretty_print            => 'indented',
+    output_encoding     => 'UTF-8',
         do_not_chain_handlers   => 1, #can be important when things get complicated
         keep_spaces         => 0,
         no_prolog           => 1,
-    );
+        );
 
-    _add_language_handlers($twig, $xcs->get_languages());
-    _add_ref_objects_handlers($twig, $xcs->get_ref_objects());
-    _add_data_cat_handlers($twig, $xcs->get_data_cats());
+  _add_language_handlers($twig, $xcs->get_languages());
+  _add_ref_objects_handlers($twig, $xcs->get_ref_objects());
+  _add_data_cat_handlers($twig, $xcs->get_data_cats());
 
-    $twig->parsefile(_core_structure_rng_location());
+  $twig->parsefile(_core_structure_rng_location());
 
-    my $rng = $twig->sprint;
-    return \$rng;
+  my $rng = $twig->sprint;
+  return \$rng;
 }
 
 #add handlers to add the language choices to the langSet specification
 sub _add_language_handlers {
-    my ($twig, $languages) = @_;
+  my ($twig, $languages) = @_;
 
     #make an RNG spec for xml:lang, to be placed
     my $choice = XML::Twig::Elt->new('choice');
     my @lang_spec = ('choice');
     for my $abbrv(sort keys %$languages){
-        XML::Twig::Elt->new('value', $abbrv )->paste($choice);
+      XML::Twig::Elt->new('value', $abbrv )->paste($choice);
     }
     $twig->setTwigHandler(
-        'define[@name="attlist.langSet"]/attribute[@name="xml:lang"]',
-        sub {
-            my ($twig, $elt) = @_;
-            $choice->paste($elt);
-        }
-    );
+      'define[@name="attlist.langSet"]/attribute[@name="xml:lang"]',
+      sub {
+        my ($twig, $elt) = @_;
+        $choice->paste($elt);
+      }
+      );
     return;
-}
+  }
 
-sub _add_ref_objects_handlers{
+  sub _add_ref_objects_handlers{
     my ($rng, $ref_objects) = @_;
     #unimplemented
-}
+  }
 
-#add the language choices to the xml:lang attribute section
+# add the language choices to the xml:lang attribute section
 sub _add_data_cat_handlers {
-    my ($twig, $data_cats) = @_;
-    for my $meta_type (qw(admin adminNote hi)){
-        $twig->setTwigHandler(_get_meta_cat_handler($meta_type, $data_cats));
+  my ($twig, $data_cats) = @_;
+    # impIDLangTypTgtDtyp includes: admin(Note), descrip(Note), ref, termNote, transac(Note)
+    # must account for ID, xml:lang, type, target, and datatype
+    # delete it afterwards
+    for my $meta_type (qw(admin adminNote
+      descrip descripNote ref termNote transac transacNote)){
+      $twig->setTwigHandler(_get_meta_cat_handler($meta_type, $data_cats));
+      #we're replacing the attlists, so delete them.
+      $twig->setTwigHandler(qq{define[\@name="attlist.$meta_type"]}, sub {$_->delete});
     }
-}
+    $twig->setTwigHandler('define[@name="impIDLangTypTgtDtyp"]', sub {$_->delete});
 
-sub _get_meta_cat_handler {
-    my ($meta_cat, $data_cats) = @_;
-    return ("define[\@name='$meta_cat']/element[\@name='$meta_cat']",
-        sub {
-           my ($twig, $el) = @_;
-           unless(exists $data_cats->{$meta_cat}){
-               $el->set_outer_xml('<empty/>');
-               return;
-           }
+    # impIDType includes xref
+    # ID, type (URI)
+
+    # <termCompList>
+    # ID, type
+
+    # <hi>
+    # type target xml:lang
+  }
+
+  sub _get_meta_cat_handler {
+  # impIDLangTypTgtDtyp can be deleted
+  my ($meta_cat, $data_cats) = @_;
+  return ("define[\@name='$meta_cat']/element[\@name='$meta_cat']",
+    sub {
+     my ($twig, $el) = @_;
+     unless(exists $data_cats->{$meta_cat}){
+       $el->set_outer_xml('<empty/>');
+       return;
+     }
            #replace children with choices based on data categories
            $el->cut_children;
            my $admin_spec = $data_cats->{$meta_cat};
            my $choice = XML::Twig::Elt->new('choice');
            for my $data_cat(@{$admin_spec}){
-               my $group = XML::Twig::Elt->new('group');
-               XML::Twig::Elt->new('ref', { name => $data_cat->{datatype} })->
-                   paste($group);
-               XML::Twig::Elt->parse(
-                   '<attribute name="type"><value>' .
-                   $data_cat->{name} .
-                   '</value></attribute>')->
-                   paste($group);
-               $group->paste($choice);
+             my $group = XML::Twig::Elt->new('group');
+             if($data_cat->{datatype} eq 'picklist'){
+              _get_rng_picklist($data_cat)->paste($group);
             }
-            $choice->paste($el);
-        }
-    );
+            else{
+              XML::Twig::Elt->new('ref', { name => $data_cat->{datatype} })->
+              paste($group);
+            }
+            XML::Twig::Elt->parse(
+             '<attribute name="type"><value>' .
+             $data_cat->{name} .
+             '</value></attribute>')->
+            paste($group);
+            $group->paste($choice);
+          }
+          $choice->paste($el);
+            #allow ID, xml:lang, target, and datatype
+            XML::Twig::Elt->new('ref', {name => 'impIDLangTgtDtyp'})->
+            paste($el);
+          }
+          );
+}
+
+#create a <choice> element containing possible values from a picklist
+sub _get_rng_picklist {
+  my ($data_cat) = @_;
+  my $choice = XML::Twig::Elt->new('choice');
+  for my $value($data_cat->{choices}){
+    XML::Twig::Elt->new('value', $value)->
+    paste($choice);
+  }
+  return $choice;
 }
 
 =head2 C<core_structure_rng>
@@ -140,13 +176,18 @@ Returns a pointer to a string containing the TBX core structure (version 2) RNG.
 =cut
 
 sub core_structure_rng {
-    my $rng = read_file(_core_structure_rng_location());
-    return \$rng;
+  my $rng = read_file(_core_structure_rng_location());
+  return \$rng;
 }
 
 sub _core_structure_rng_location {
-    return path(dist_dir('XML-TBX-Dialect'),'TBXcoreStructV02.rng');
+  return path(dist_dir('XML-TBX-Dialect'),'TBXcoreStructV02.rng');
 }
+
+=head1 GOTCHAS
+
+RNG does not validate IDREF attributes, unlike DTD. Therefore, you will not
+be able to check that target attributes refer to actual IDs within the file.
 
 =head1 FUTURE WORK
 
