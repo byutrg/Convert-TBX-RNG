@@ -53,27 +53,27 @@ sub generate_rng {
   my $xcs = TBX::XCS->new();
   if($args{xcs_file}){
     $xcs->parse(file => $args{xcs_file});
-  }else{
-    $xcs->parse(string => $args{xcs});
-  }
+    }else{
+      $xcs->parse(string => $args{xcs});
+    }
 
-  my $twig = new XML::Twig(
-    pretty_print            => 'indented',
-    output_encoding     => 'UTF-8',
+    my $twig = new XML::Twig(
+      pretty_print            => 'indented',
+      output_encoding     => 'UTF-8',
         do_not_chain_handlers   => 1, #can be important when things get complicated
         keep_spaces         => 0,
         no_prolog           => 1,
         );
 
-  _add_language_handlers($twig, $xcs->get_languages());
-  _add_ref_objects_handlers($twig, $xcs->get_ref_objects());
-  _add_data_cat_handlers($twig, $xcs->get_data_cats());
+    _add_language_handlers($twig, $xcs->get_languages());
+    _add_ref_objects_handlers($twig, $xcs->get_ref_objects());
+    _add_data_cat_handlers($twig, $xcs->get_data_cats());
 
-  $twig->parsefile(_core_structure_rng_location());
+    $twig->parsefile(_core_structure_rng_location());
 
-  my $rng = $twig->sprint;
-  return \$rng;
-}
+    my $rng = $twig->sprint;
+    return \$rng;
+  }
 
 #add handlers to add the language choices to the langSet specification
 sub _add_language_handlers {
@@ -128,15 +128,15 @@ sub _add_data_cat_handlers {
   }
 
   sub _get_impIDLangTypTgtDtyp_meta_cat_handler {
-  # impIDLangTypTgtDtyp can be deleted
-  my ($meta_cat, $data_cats) = @_;
-  return ("define[\@name='$meta_cat']/element[\@name='$meta_cat']",
-    sub {
-     my ($twig, $el) = @_;
-     unless(exists $data_cats->{$meta_cat}){
-       $el->set_outer_xml('<empty/>');
-       return;
-     }
+    #TODO: check for termComp in termNote
+    my ($meta_cat, $data_cats) = @_;
+    return ("define[\@name='$meta_cat']/element[\@name='$meta_cat']",
+      sub {
+       my ($twig, $el) = @_;
+       unless(exists $data_cats->{$meta_cat}){
+         $el->set_outer_xml('<empty/>');
+         return;
+       }
            #replace children with choices based on data categories
            $el->cut_children;
            my $admin_spec = $data_cats->{$meta_cat};

@@ -1,7 +1,7 @@
 #make sure that the core structure RNG validates a TBX file
 use t::TestRNG;
 use Test::More 0.88;
-plan tests => 6;
+plan tests => 10;
 use Convert::TBX::RNG qw(generate_rng);
 use XML::Jing;
 use TBX::Checker qw(check);
@@ -214,6 +214,44 @@ and descrip is special
                 </langSet>
             </termEntry>
 
+=== ref
+--- xcs xcs_with_datCats
+
+        <refSpec name="crossReference" datcatId="ISO12620A-1018">
+            <contents targetType="element"/>
+        </refSpec>
+
+--- good tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <tig>
+                        <term>foo</term>
+                        <ref target="bar" type="crossReference" id="foo" datatype="text" xml:lang="en">Users and applications interface with the federated
+                            "foo" and "bar" go together</ref>
+                    </tig>
+                </langSet>
+                <langSet xml:lang="en">
+                    <tig>
+                        <term id="bar">bar</term>
+                    </tig>
+                </langSet>
+            </termEntry>
+
+--- bad tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <tig>
+                        <term>foo</term>
+                        <ref target="bar" type="bad_type" id="foo" datatype="text" xml:lang="en">Users and applications interface with the federated
+                            "foo" and "bar" go together</ref>
+                    </tig>
+                </langSet>
+                <langSet xml:lang="en">
+                    <tig>
+                        <term id="bar">bar</term>
+                    </tig>
+                </langSet>
+            </termEntry>
 
 === hi
 --- SKIP
