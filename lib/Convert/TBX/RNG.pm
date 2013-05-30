@@ -47,11 +47,15 @@ an XCS file which defines the desired dialect.
 
 sub generate_rng {
   my (%args) = @_;
-  if(! $args{xcs_file}){
-    croak "missing 'xcs_file' parameter";
+  if( not ($args{xcs_file} || $args{xcs}) ){
+    croak "requires either 'xcs_file' or 'xcs' parameters";
   }
   my $xcs = TBX::XCS->new();
-  $xcs->parse(file => $args{xcs_file});
+  if($args{xcs_file}){
+    $xcs->parse(file => $args{xcs_file});
+  }else{
+    $xcs->parse(string => $args{xcs});
+  }
 
   my $twig = new XML::Twig(
     pretty_print            => 'indented',
@@ -103,12 +107,15 @@ sub _add_data_cat_handlers {
     # must account for ID, xml:lang, type, target, and datatype
     # delete it afterwards
     for my $meta_type (qw(admin adminNote
-      descrip descripNote ref termNote transac transacNote)){
-      $twig->setTwigHandler(_get_meta_cat_handler($meta_type, $data_cats));
+      descripNote ref termNote transac transacNote descrip)){
+      $twig->setTwigHandler(_get_impIDLangTypTgtDtyp_meta_cat_handler($meta_type, $data_cats));
       #we're replacing the attlists, so delete them.
-      $twig->setTwigHandler(qq{define[\@name="attlist.$meta_type"]}, sub {$_->delete});
+      $twig->setTwigHandler(qq<define[\@name="attlist.$meta_type"]>, sub {$_->delete});
     }
     $twig->setTwigHandler('define[@name="impIDLangTypTgtDtyp"]', sub {$_->delete});
+
+    # descrip is like above, but with levels
+    # $twig->setTwigHandler('define[@name="attlist.descrip"]', sub {$_->delete});
 
     # impIDType includes xref
     # ID, type (URI)
@@ -120,7 +127,7 @@ sub _add_data_cat_handlers {
     # type target xml:lang
   }
 
-  sub _get_meta_cat_handler {
+  sub _get_impIDLangTypTgtDtyp_meta_cat_handler {
   # impIDLangTypTgtDtyp can be deleted
   my ($meta_cat, $data_cats) = @_;
   return ("define[\@name='$meta_cat']/element[\@name='$meta_cat']",

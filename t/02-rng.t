@@ -10,6 +10,8 @@ use FindBin qw($Bin);
 use File::Slurp;
 
 my $corpus_dir = path($Bin, 'corpus');
+my $temp_xcs = path($corpus_dir, 'temp.xcs');
+my $temp_tbx = path($corpus_dir, 'temp.tbx');
 
 #can't use TBXChecker with these because of bad behavior
 my @checker_broken = qw( hiBad.tbx );
@@ -23,38 +25,47 @@ for my $block(blocks){
 	# my $dialect = XML::TBX::Dialect->new();
 	my $xcs = $block->xcs
 		or next;
+	# print $$xcs;
+
 	# $dialect->set_xcs(file => path($corpus_dir, $xcs));
-	my $rng = generate_rng(xcs_file => path($corpus_dir, $xcs));
-	my $tmp = File::Temp->new();
-	write_file($tmp, $rng);
+	my $rng = generate_rng(xcs => $xcs);
+	my $rng_tmp = File::Temp->new();
+	write_file($rng_tmp, $rng);
 	# print $$rng;
-	my $jing = XML::Jing->new($tmp->filename);
+	write_file($temp_xcs, $xcs);
+	my $jing = XML::Jing->new($rng_tmp->filename);
 
 	for my $good( $block->good ){
-		compare_validation($jing, path($corpus_dir, $good), 1);
+		write_file($temp_tbx, $good);
+		compare_validation($jing, $temp_tbx, 1);
 	}
+
 	for my $bad( $block->bad ){
-		compare_validation($jing, path($corpus_dir, $bad), 0);
+		write_file($temp_tbx, $bad);
+		compare_validation($jing, $temp_tbx, 0);
 	}
+	# for my $bad( $block->bad ){
+	# 	compare_validation($jing, path($corpus_dir, $bad), 0);
+	# }
 }
 
+#clean up temp files
+unlink $temp_xcs
+	if -e $temp_xcs;
+unlink $temp_tbx
+	if -e $temp_tbx;
 # pass in a pre-loaded XML::Jing, the name of the TBX file to check, and a boolean
 # representing whether the file should be valid
 #  Tests for TBX validity via $jing and via TBX::Checker
 sub compare_validation {
 	my ($jing, $tbx_file, $expected) = @_;
-	subtest $tbx_file->basename . ' should ' . ($expected ? q() : 'not ') . 'be valid' =>
+	subtest 'TBX should ' . ($expected ? q() : 'not ') . 'be valid' =>
 	sub {
 		plan tests => 2;
-		my ($valid, $messages);
-		#some files can't be checked with the TBXChecker
-		if(grep {$_ eq $tbx_file->basename} @checker_broken){
-			ok(1, 'Skip TBX::Checker validation');
-		}else{
-			($valid, $messages) = check($tbx_file);
-			is($valid, $expected, 'TBXChecker')
-				or note explain $messages;
-		}
+
+		my ($valid, $messages) = check($tbx_file);
+		is($valid, $expected, 'TBXChecker')
+			or note explain $messages;
 
 		my $error = $jing->validate($tbx_file);
 		print $error if defined $error;
@@ -66,20 +77,100 @@ sub compare_validation {
 
 __DATA__
 === langSet languages
---- xcs: small.xcs
---- bad: langTestBad.tbx
---- good lines chomp
-langTestGood.tbx
-langTestGood2.tbx
+--- xcs xcs_with_languages
+	<langInfo>
+	    <langCode>en</langCode>
+	    <langName>English</langName>
+	</langInfo>
+	<langInfo>
+	    <langCode>fr</langCode>
+	    <langName>French</langName>
+	</langInfo>
+	<langInfo>
+	    <langCode>de</langCode>
+	    <langName>German</langName>
+	</langInfo>
+--- bad tbx_with_body
+			<termEntry id="c2">
+				<!-- Should fail, since XCS doesn't have Lushootseed -->
+				<langSet xml:lang="lut">
+					<tig>
+						<term>bar</term>
+					</tig>
+				</langSet>
+			</termEntry>
+--- good tbx_with_body
+			<termEntry id="c2">
+				<langSet xml:lang="fr">
+					<tig>
+						<term>bar</term>
+					</tig>
+				</langSet>
+			</termEntry>
 
-=== admin and adminNote
---- good chomp
-adminGood.tbx
---- bad lines chomp
-adminBad.tbx
-adminNoteBad.tbx
---- xcs chomp
-admin.xcs
+=== admin
+--- good tbx_with_body
+			<termEntry id="c1">
+				<langSet xml:lang="en">
+					<tig>
+						<term>foo</term>
+						<adminGrp>
+							<admin type="annotatedNote" id="fluff" datatype="text" xml:lang="es">fu</admin>
+						</adminGrp>
+					</tig>
+				</langSet>
+			</termEntry>
+--- bad tbx_with_body
+			<termEntry id="c1">
+				<langSet xml:lang="en">
+					<tig>
+						<term>foo</term>
+						<adminGrp>
+							<admin type="bad_category" id="fluff" datatype="text" xml:lang="es">fu</admin>
+						</adminGrp>
+					</tig>
+				</langSet>
+			</termEntry>
+--- xcs xcs_with_datCats
+        <adminSpec name="annotatedNote" datcatId="">
+            <contents/>
+        </adminSpec>
+        <adminNoteSpec name="noteSource" datcatId="">
+            <contents/>
+        </adminNoteSpec>
+
+=== admin note
+--- good tbx_with_body
+			<termEntry id="c1">
+				<langSet xml:lang="en">
+					<tig>
+						<term>foo</term>
+						<adminGrp>
+							<admin type="annotatedNote" id="fluff" datatype="text" xml:lang="es" target="bar">fu</admin>
+							<adminNote type="noteSource" id="bar" datatype="text" xml:lang="en" target="fluff">bar</adminNote>
+						</adminGrp>
+					</tig>
+				</langSet>
+			</termEntry>
+--- bad tbx_with_body
+			<termEntry id="c1">
+				<langSet xml:lang="en">
+					<tig>
+						<term>foo</term>
+						<adminGrp>
+							<admin type="annotatedNote" id="fluff" datatype="text" xml:lang="es" target="bar">bar</admin>
+							<adminNote type="bad_category" id="bar" datatype="text" xml:lang="en" target="fluff">baz</adminNote>
+						</adminGrp>
+					</tig>
+				</langSet>
+			</termEntry>
+--- xcs xcs_with_datCats
+        <adminSpec name="annotatedNote" datcatId="">
+            <contents/>
+        </adminSpec>
+        <adminNoteSpec name="noteSource" datcatId="">
+            <contents/>
+        </adminNoteSpec>
 
 === hi
 --- SKIP
