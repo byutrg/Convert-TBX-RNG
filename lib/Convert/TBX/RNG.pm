@@ -108,14 +108,21 @@ sub _add_data_cat_handlers {
     # delete it afterwards
     for my $meta_type (qw(admin adminNote
       descripNote ref transac transacNote termNote descrip)){
-      $twig->setTwigHandler(_get_impIDLangTypTgtDtyp_meta_cat_handler($meta_type, $data_cats));
+      $twig->setTwigHandler(_get_impIDLangTypTgtDtyp_meta_cat_handler($meta_type, $data_cats->{$meta_type}));
       #we're replacing the attlists, so delete them.
       $twig->setTwigHandler(qq<define[\@name="attlist.$meta_type"]>, sub {$_->delete});
     }
     $twig->setTwigHandler('define[@name="impIDLangTypTgtDtyp"]', sub {$_->delete});
 
-    # descrip is like above, but with levels
+    # termNote: unless forTermComp="yes", remove from termCompGrp contents
+    # if()
+    # TODO: what about termNoteGrp?
+    # $twig->setTwigHandler('define[@name="attlist.termNote"]', sub {$_->delete});
+
+    # descrip and termNote are like above, but with levels
     # $twig->setTwigHandler('define[@name="attlist.descrip"]', sub {$_->delete});
+
+
 
     # impIDType includes xref
     # ID, type (URI)
@@ -129,22 +136,22 @@ sub _add_data_cat_handlers {
 
   sub _get_impIDLangTypTgtDtyp_meta_cat_handler {
     #TODO: check for termComp in termNote
-    my ($meta_cat, $data_cats) = @_;
+    my ($meta_cat, $datcat_spec) = @_;
     return ("define[\@name='$meta_cat']/element[\@name='$meta_cat']",
+      #disallow content if none specified
       sub {
        my ($twig, $el) = @_;
-       unless(exists $data_cats->{$meta_cat}){
+       unless($datcat_spec){
          $el->set_outer_xml('<empty/>');
          return;
        }
            #replace children with choices based on data categories
            $el->cut_children;
-           my $admin_spec = $data_cats->{$meta_cat};
            my $choice = XML::Twig::Elt->new('choice');
-           for my $data_cat(@{$admin_spec}){
+           for my $data_cat(@{$datcat_spec}){
              my $group = XML::Twig::Elt->new('group');
              if($data_cat->{datatype} eq 'picklist'){
-              _get_rng_picklist($data_cat)->paste($group);
+              _get_rng_picklist($data_cat->{choices})->paste($group);
             }
             else{
               XML::Twig::Elt->new('ref', { name => $data_cat->{datatype} })->
@@ -161,15 +168,15 @@ sub _add_data_cat_handlers {
             #allow ID, xml:lang, target, and datatype
             XML::Twig::Elt->new('ref', {name => 'impIDLangTgtDtyp'})->
             paste($el);
-          }
-          );
+        }
+      );
 }
 
-#create a <choice> element containing possible values from a picklist
+#create a <choice> element containing values from an array ref
 sub _get_rng_picklist {
-  my ($data_cat) = @_;
+  my ($picklist) = @_;
   my $choice = XML::Twig::Elt->new('choice');
-  for my $value($data_cat->{choices}){
+  for my $value($picklist){
     XML::Twig::Elt->new('value', $value)->
     paste($choice);
   }

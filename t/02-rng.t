@@ -326,6 +326,38 @@ and descrip is special
                 </langSet>
             </termEntry>
 
+=== termNote
+--- SKIP
+--- xcs xcs_with_datCats
+
+        <termNoteSpec name="generalNote" datcatId="">
+            <contents/>
+        </termNoteSpec>
+
+--- good tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <tig>
+                        <term id="foo">foo</term>
+                        <termNote type="generalNote" id="bar" datatype="text" xml:lang="en" target="foo">
+                            some note
+                        </termNote>
+                    </tig>
+                </langSet>
+            </termEntry>
+
+--- bad tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <tig>
+                        <term id="foo">foo</term>
+                        <termNote type="bad_cat" id="bar" datatype="text" xml:lang="en" target="foo">
+                            some note
+                        </termNote>
+                    </tig>
+                </langSet>
+            </termEntry>
+
 === hi
 --- SKIP
 --- good chomp
