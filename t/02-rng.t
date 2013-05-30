@@ -1,7 +1,7 @@
 #make sure that the core structure RNG validates a TBX file
 use t::TestRNG;
 use Test::More 0.88;
-plan tests => 10;
+plan tests => 14;
 use Convert::TBX::RNG qw(generate_rng);
 use XML::Jing;
 use TBX::Checker qw(check);
@@ -254,7 +254,6 @@ and descrip is special
             </termEntry>
 
 === transac
---- ONLY
 --- xcs xcs_with_datCats
 
         <transacSpec name="transactionType" datcatId="ISO12620A-1001">
@@ -282,6 +281,46 @@ and descrip is special
                         <transacGrp>
                             <transac type="bad_cat" id="bar" datatype="text" xml:lang="en" target="foo">
                                 random transaction...</transac>
+                        </transacGrp>
+                    </tig>
+                </langSet>
+            </termEntry>
+
+=== transacNote
+--- xcs xcs_with_datCats
+
+        <transacSpec name="transactionType" datcatId="ISO12620A-1001">
+            <contents/>
+        </transacSpec>
+        <transacNoteSpec name="generalNote" datcatId="">
+            <contents/>
+        </transacNoteSpec>
+
+--- good tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <tig>
+                        <term id="foo">foo</term>
+                        <transacGrp>
+                            <transac type="transactionType" id="bar" datatype="text" xml:lang="en" target="foo">
+                                random transaction...</transac>
+                            <transacNote type="generalNote" id="baz" datatype="text" xml:lang="en" target="bar">
+                                just random</transacNote>
+                        </transacGrp>
+                    </tig>
+                </langSet>
+            </termEntry>
+
+--- bad tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <tig>
+                        <term id="foo">foo</term>
+                        <transacGrp>
+                            <transac type="transactionType" id="bar" datatype="text" xml:lang="en" target="foo">
+                                random transaction...</transac>
+                            <transacNote type="bad_cat" id="baz" datatype="text" xml:lang="en" target="bar">
+                                just random</transacNote>
                         </transacGrp>
                     </tig>
                 </langSet>
