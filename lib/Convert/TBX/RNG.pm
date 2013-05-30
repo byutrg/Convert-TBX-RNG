@@ -107,7 +107,7 @@ sub _add_data_cat_handlers {
     # must account for ID, xml:lang, type, target, and datatype
     # delete it afterwards
     for my $meta_type (qw(admin adminNote
-      descripNote ref termNote transac transacNote descrip)){
+      descripNote ref transac transacNote termNote descrip)){
       $twig->setTwigHandler(_get_impIDLangTypTgtDtyp_meta_cat_handler($meta_type, $data_cats));
       #we're replacing the attlists, so delete them.
       $twig->setTwigHandler(qq<define[\@name="attlist.$meta_type"]>, sub {$_->delete});

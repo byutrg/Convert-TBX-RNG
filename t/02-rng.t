@@ -226,7 +226,7 @@ and descrip is special
                 <langSet xml:lang="en">
                     <tig>
                         <term>foo</term>
-                        <ref target="bar" type="crossReference" id="foo" datatype="text" xml:lang="en">Users and applications interface with the federated
+                        <ref target="bar" type="crossReference" id="foo" datatype="text" xml:lang="en">
                             "foo" and "bar" go together</ref>
                     </tig>
                 </langSet>
@@ -242,13 +242,47 @@ and descrip is special
                 <langSet xml:lang="en">
                     <tig>
                         <term>foo</term>
-                        <ref target="bar" type="bad_type" id="foo" datatype="text" xml:lang="en">Users and applications interface with the federated
+                        <ref target="bar" type="bad_type" id="foo" datatype="text" xml:lang="en">
                             "foo" and "bar" go together</ref>
                     </tig>
                 </langSet>
                 <langSet xml:lang="en">
                     <tig>
                         <term id="bar">bar</term>
+                    </tig>
+                </langSet>
+            </termEntry>
+
+=== transac
+--- ONLY
+--- xcs xcs_with_datCats
+
+        <transacSpec name="transactionType" datcatId="ISO12620A-1001">
+            <contents/>
+        </transacSpec>
+
+--- good tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <tig>
+                        <term id="foo">foo</term>
+                        <transacGrp>
+                            <transac type="transactionType" id="bar" datatype="text" xml:lang="en" target="foo">
+                                random transaction...</transac>
+                        </transacGrp>
+                    </tig>
+                </langSet>
+            </termEntry>
+
+--- bad tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <tig>
+                        <term id="foo">foo</term>
+                        <transacGrp>
+                            <transac type="bad_cat" id="bar" datatype="text" xml:lang="en" target="foo">
+                                random transaction...</transac>
+                        </transacGrp>
                     </tig>
                 </langSet>
             </termEntry>
