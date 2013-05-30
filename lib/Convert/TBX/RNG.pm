@@ -214,11 +214,12 @@ sub _constrain_termNote {
         return;
     }
 
-    #find which data categories belong at each level
+    #edit the data categories for the termComp level
     my @termComp_cats = grep { $_->{forTermComp} } @$data_cat_list;
     _edit_meta_cat($termNote_termCompGrp_elt, \@termComp_cats);
-    my @other_cats = grep { ! $_->{forTermComp} } @$data_cat_list;
-    _edit_meta_cat($termNote_elt, \@other_cats);
+
+    #edit the data categories for the other levels
+    _edit_meta_cat($termNote_elt, $data_cat_list);
 }
 
 #arg: hash ref containing data category information

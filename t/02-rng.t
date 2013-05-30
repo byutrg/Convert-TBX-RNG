@@ -1,4 +1,4 @@
-#make sure that the core structure RNG validates a TBX file
+#make sure that generated RNG validates the TBX/XCS pairs that TBX::Checker does
 use t::TestRNG;
 use Test::More 0.88;
 plan tests => 18;
@@ -67,7 +67,7 @@ sub compare_validation {
         my $error = $jing->validate($tbx_file);
         print $error if defined $error;
         #undefined error means it's valid, defined invalid
-        ok((defined($error) xor $expected), 'Core structure RNG')
+        ok((defined($error) xor $expected), 'Generated RNG')
             or ($error and note $error);
     };
 }
@@ -397,15 +397,16 @@ and descrip is special
             </termEntry>
 
 === termNote with forTermComp
+TBXChecker doesn't verify this
 --- SKIP
 --- xcs xcs_with_datCats
 
+        <termCompListSpec name="termElement" datcatId="ISO12620A-020802">
+            <contents forTermComp="yes"/>
+        </termCompListSpec>
+
         <termNoteSpec name="generalNote" datcatId="">
             <contents/>
-        </termNoteSpec>
-
-        <termNoteSpec name="compNote" datcatId="">
-            <contents forTermComp="yes"/>
         </termNoteSpec>
 
         <termNoteSpec name="compNote" datcatId="">
@@ -424,7 +425,7 @@ and descrip is special
                             <termNote type="compNote" id="baz" datatype="text" xml:lang="en" target="foo">
                                 some note
                             </termNote>
-                            <termCompList>
+                            <termCompList type="termElement">
                                 <termCompGrp>
                                     <termComp id="buzz" xml:lang="en">
                                         some
@@ -445,13 +446,14 @@ and descrip is special
                     <ntig>
                         <termGrp>
                             <term id="foo">foo</term>
-                            <termCompList>
+                            <termCompList type="termElement">
                                 <termCompGrp>
                                     <termComp id="buzz" xml:lang="en">
                                         some
                                     </termComp>
+                                    <!-- This is disallowed at this level-->
                                     <termNote type="generalNote" id="biz" datatype="text" xml:lang="en" target="buzz">
-                                        this can't be here!
+                                        bad note
                                     </termNote>
                                 </termCompGrp>
                             </termCompList>
