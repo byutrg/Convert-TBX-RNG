@@ -67,18 +67,21 @@ sub generate_rng {
         no_prolog   => 1,
     );
 
-    _add_language_handlers( $twig, $xcs->get_languages() );
-    _add_ref_objects_handlers( $twig, $xcs->get_ref_objects() );
-    _add_data_cat_handlers( $twig, $xcs->get_data_cats() );
-
+    #parse the original RNG
     $twig->parsefile( _core_structure_rng_location() );
+
+    #edit the RNG structure to match the XCS constraints
+    _constrain_languages( $twig, $xcs->get_languages() );
+    _constrain_ref_objects( $twig, $xcs->get_ref_objects() );
+    _constrain_meta_cats( $twig, $xcs->get_data_cats() );
+
 
     my $rng = $twig->sprint;
     return \$rng;
 }
 
-#add handlers to add the language choices to the langSet specification
-sub _add_language_handlers {
+# add the language choices to the langSet specification
+sub _constrain_languages {
     my ( $twig, $languages ) = @_;
 
     #make an RNG spec for xml:lang, to be placed
@@ -87,24 +90,22 @@ sub _add_language_handlers {
     for my $abbrv ( sort keys %$languages ) {
         XML::Twig::Elt->new( 'value', $abbrv )->paste($choice);
     }
-    $twig->setTwigHandler(
-        'define[@name="attlist.langSet"]/attribute[@name="xml:lang"]',
-        sub {
-            my ( $twig, $elt ) = @_;
-            $choice->paste($elt);
-        }
-    );
+    my $lang_elt = $twig->root->get_xpath(
+      'define[@name="attlist.langSet"]/' .
+      'attribute[@name="xml:lang"]', 0);
+    $choice->paste($lang_elt);
     return;
 }
 
-sub _add_ref_objects_handlers {
+# add ref object choices to back matter
+sub _constrain_ref_objects {
     my ( $rng, $ref_objects ) = @_;
 
     #unimplemented
 }
 
-# add the language choices to the xml:lang attribute section
-sub _add_data_cat_handlers {
+# constrain meta-data cats by their data cats
+sub _constrain_meta_cats {
     my ( $twig, $data_cats ) = @_;
 
 # impIDLangTypTgtDtyp includes: admin(Note), descrip(Note), ref, termNote, transac(Note)
@@ -114,22 +115,18 @@ sub _add_data_cat_handlers {
         descripNote ref transac transacNote termNote descrip)
       )
     {
-        $twig->setTwigHandler(
-          "define[\@name='$meta_cat']/element[\@name='$meta_cat']",
-            _get_meta_cat_handler(
-                $data_cats->{$meta_cat}
-            )
-        );
+        my $elt = $twig->get_xpath(
+          "define[\@name='$meta_cat']/" .
+          "element[\@name='$meta_cat']", 0);
+        _edit_meta_cat($elt, $data_cats->{$meta_cat});
 
         #we no longer use the attlists
-        $twig->setTwigHandler( qq<define[\@name="attlist.$meta_cat"]>,
-            sub { $_->delete } );
+        $twig->get_xpath( qq<define[\@name="attlist.$meta_cat"]>, 0)->delete;
     }
 
     # termNote: unless forTermComp="yes", remove from termCompGrp contents
     # if()
     # TODO: what about termNoteGrp?
-
 
     # no longer use the attlists
     # $twig->setTwigHandler('define[@name="attlist.termNote"]', sub {$_->delete});
@@ -138,8 +135,7 @@ sub _add_data_cat_handlers {
    # $twig->setTwigHandler('define[@name="attlist.descrip"]', sub {$_->delete});
 
     # we leave no reference to this entity
-    $twig->setTwigHandler( 'define[@name="impIDLangTypTgtDtyp"]',
-        sub { $_->delete } );
+    $twig->get_xpath( 'define[@name="impIDLangTypTgtDtyp"]', 0)->delete;
 
     # impIDType includes xref
     # ID, type (URI)
@@ -151,31 +147,29 @@ sub _add_data_cat_handlers {
     # type target xml:lang
 }
 
-# args: array ref containing data cat specs for a meta-data category
 # handles elements of impIDLangTypTgtDtyp which do not have level specifications
-sub _get_meta_cat_handler {
-    my ( $data_cat_list ) = @_;
-    return
-        sub {
-            my ( $twig, $el ) = @_;
-            #disallow content if none specified
-            unless ( $data_cat_list ) {
-                $el->set_outer_xml('<empty/>');
-                return;
-            }
+# args: twig element of meta-data cat to be constrained,
+# array ref containing data cat specs for a meta-data category
+sub _edit_meta_cat {
+    my ( $meta_cat_elt, $data_cat_list ) = @_;
+    my ( $twig, $el ) = @_;
+    #disallow content if none specified
+    unless ( $data_cat_list ) {
+        $meta_cat_elt->set_outer_xml('<empty/>');
+        return;
+    }
 
-            #replace children with rng:choice, with contents based on data categories
-            $el->cut_children;
-            my $choice = XML::Twig::Elt->new('choice');
-            for my $data_cat ( @{$data_cat_list} ) {
-                _get_rng_group_for_datacat($data_cat)->paste($choice);
-            }
-            $choice->paste($el);
+    #replace children with rng:choice, with contents based on data categories
+    $meta_cat_elt->cut_children;
+    my $choice = XML::Twig::Elt->new('choice');
+    for my $data_cat ( @{$data_cat_list} ) {
+        _get_rng_group_for_datacat($data_cat)->paste($choice);
+    }
+    $choice->paste($meta_cat_elt);
 
-            #allow ID, xml:lang, target, and datatype
-            XML::Twig::Elt->new( 'ref', { name => 'impIDLangTgtDtyp' } )
-              ->paste($el);
-        };
+    #allow ID, xml:lang, target, and datatype
+    XML::Twig::Elt->new( 'ref', { name => 'impIDLangTgtDtyp' } )
+      ->paste($meta_cat_elt);
 }
 
 #arg: hash ref containing data category information
