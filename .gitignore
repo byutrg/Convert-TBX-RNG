@@ -4,3 +4,4 @@ _Inline
 .build
 XML-TBX-Dialect-*/
 ./*.tar.gz
+t/corpus/temp.tbx
