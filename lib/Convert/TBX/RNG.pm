@@ -112,7 +112,7 @@ sub _constrain_meta_cats {
 # must account for ID, xml:lang, type, target, and datatype
     for my $meta_cat (
         qw(admin adminNote
-        descripNote ref transac transacNote termNote descrip)
+        descripNote ref transac transacNote descrip)
       )
     {
         my $elt = $twig->get_xpath(
@@ -124,12 +124,14 @@ sub _constrain_meta_cats {
         $twig->get_xpath( qq<define[\@name="attlist.$meta_cat"]>, 0)->delete;
     }
 
+    _constrain_termCompList($twig, $data_cats->{'termCompList'});
+
     # termNote: unless forTermComp="yes", remove from termCompGrp contents
+    _constrain_termNote($twig, $data_cats->{'termNote'});
     # if()
     # TODO: what about termNoteGrp?
-
     # no longer use the attlists
-    # $twig->setTwigHandler('define[@name="attlist.termNote"]', sub {$_->delete});
+    $twig->get_xpath( 'define[@name="attlist.termNote"]', 0)->delete;
 
    # descrip and termNote are like above, but with levels
    # $twig->setTwigHandler('define[@name="attlist.descrip"]', sub {$_->delete});
@@ -152,9 +154,8 @@ sub _constrain_meta_cats {
 # array ref containing data cat specs for a meta-data category
 sub _edit_meta_cat {
     my ( $meta_cat_elt, $data_cat_list ) = @_;
-    my ( $twig, $el ) = @_;
     #disallow content if none specified
-    unless ( $data_cat_list ) {
+    unless ( $data_cat_list && @$data_cat_list ) {
         $meta_cat_elt->set_outer_xml('<empty/>');
         return;
     }
@@ -170,6 +171,54 @@ sub _edit_meta_cat {
     #allow ID, xml:lang, target, and datatype
     XML::Twig::Elt->new( 'ref', { name => 'impIDLangTgtDtyp' } )
       ->paste($meta_cat_elt);
+}
+
+sub _constrain_termCompList {
+  my ($twig, $data_cat_list) = @_;
+
+  #disallow all content if none specified
+  if(!$data_cat_list){
+    $twig->get_xpath(
+    'define[@name="termCompList"]/' .
+    'element[@name="termCompList"]', 0)->set_outer_xml('<empty/>');
+    return;
+  }
+  my $termCompList_type_elt = $twig->get_xpath(
+    'define[@name="attlist.termCompList"]/' .
+    'attribute[@name="type"]', 0);
+
+  #create choices for type attribute
+  my $choice = XML::Twig::Elt->new('choice');
+  for my $data_cat ( @{$data_cat_list} ) {
+      XML::Twig::Elt->new('value',$data_cat->{'name'})->
+        paste($choice);
+  }
+  $choice->paste($termCompList_type_elt);
+
+}
+
+# args are parsed twig and hash ref of data_categories
+sub _constrain_termNote {
+  my ($twig, $data_cat_list) = @_;
+  my $termNote_elt = $twig->get_xpath(
+          'define[@name="termNote"]/' .
+          'element[@name="termNote"]', 0) or die 'coulnd"t find termNote';
+  my $termNote_termCompGrp_elt = $twig->get_xpath(
+          'define[@name="termCompGrp.termNote"]/' .
+          'element[@name="termNote"]', 0) or die 'coulnd"t find termCompGrp.termNote';
+
+    #disallow content if none specified
+    unless ( $data_cat_list ) {
+        $termNote_elt->set_outer_xml('<empty/>');
+        $termNote_termCompGrp_elt->set_outer_xml('<empty/>');
+        return;
+    }
+
+    #find which data categories belong at each level
+    my @termComp_cats = grep { $_->{forTermComp} } @$data_cat_list;
+    _edit_meta_cat($termNote_termCompGrp_elt, \@termComp_cats);
+    my @other_cats = grep { ! $_->{forTermComp} } @$data_cat_list;
+    _edit_meta_cat($termNote_elt, \@other_cats);
 }
 
 #arg: hash ref containing data category information

@@ -1,7 +1,7 @@
 #make sure that the core structure RNG validates a TBX file
 use t::TestRNG;
 use Test::More 0.88;
-plan tests => 14;
+plan tests => 18;
 use Convert::TBX::RNG qw(generate_rng);
 use XML::Jing;
 use TBX::Checker qw(check);
@@ -326,8 +326,46 @@ and descrip is special
                 </langSet>
             </termEntry>
 
+=== termCompList
+--- xcs xcs_with_datCats
+
+        <termCompListSpec name="termElement" datcatId="ISO12620A-020802">
+            <contents forTermComp="yes"/>
+        </termCompListSpec>
+
+--- good tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <ntig>
+                        <termGrp>
+                            <term id="foo">foo-bar</term>
+                            <termCompList id="bar" type="termElement">
+                                <termComp id="buzz" xml:lang="en">
+                                    boo
+                                </termComp>
+                            </termCompList>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+
+--- bad tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <ntig>
+                        <termGrp>
+                            <term id="foo">foo-bar</term>
+                            <termCompList id="bar" type="bad_category">
+                                <termComp id="buzz" xml:lang="en">
+                                    boo
+                                </termComp>
+                            </termCompList>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+
 === termNote
---- SKIP
 --- xcs xcs_with_datCats
 
         <termNoteSpec name="generalNote" datcatId="">
@@ -355,6 +393,70 @@ and descrip is special
                             some note
                         </termNote>
                     </tig>
+                </langSet>
+            </termEntry>
+
+=== termNote with forTermComp
+--- SKIP
+--- xcs xcs_with_datCats
+
+        <termNoteSpec name="generalNote" datcatId="">
+            <contents/>
+        </termNoteSpec>
+
+        <termNoteSpec name="compNote" datcatId="">
+            <contents forTermComp="yes"/>
+        </termNoteSpec>
+
+        <termNoteSpec name="compNote" datcatId="">
+            <contents forTermComp="yes"/>
+        </termNoteSpec>
+
+--- good tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <ntig>
+                        <termGrp>
+                            <term id="foo">foo</term>
+                            <termNote type="generalNote" id="bar" datatype="text" xml:lang="en" target="foo">
+                                some note
+                            </termNote>
+                            <termNote type="compNote" id="baz" datatype="text" xml:lang="en" target="foo">
+                                some note
+                            </termNote>
+                            <termCompList>
+                                <termCompGrp>
+                                    <termComp id="buzz" xml:lang="en">
+                                        some
+                                    </termComp>
+                                    <termNote type="compNote" id="biz" datatype="text" xml:lang="en" target="buzz">
+                                        some note
+                                    </termNote>
+                                </termCompGrp>
+                            </termCompList>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+
+--- bad tbx_with_body
+           <termEntry>
+                <langSet xml:lang="en">
+                    <ntig>
+                        <termGrp>
+                            <term id="foo">foo</term>
+                            <termCompList>
+                                <termCompGrp>
+                                    <termComp id="buzz" xml:lang="en">
+                                        some
+                                    </termComp>
+                                    <termNote type="generalNote" id="biz" datatype="text" xml:lang="en" target="buzz">
+                                        this can't be here!
+                                    </termNote>
+                                </termCompGrp>
+                            </termCompList>
+                        </termGrp>
+                    </ntig>
                 </langSet>
             </termEntry>
 

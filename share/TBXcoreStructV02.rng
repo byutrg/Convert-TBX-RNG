@@ -375,7 +375,7 @@
       <ref name="termComp"/>
       <zeroOrMore>
         <choice>
-          <ref name="termNote"/>
+          <ref name="termCompGrp.termNote"/>
           <ref name="termNoteGrp"/>
         </choice>
       </zeroOrMore>
@@ -446,6 +446,13 @@
         <data type="ID"/>
       </attribute>
     </optional>
+  </define>
+  <!-- For the termNotes used in termCompGrp -->
+  <define name="termCompGrp.termNote">
+    <element name="termNote">
+      <ref name="attlist.termNote"/>
+      <ref name="noteText"/>
+    </element>
   </define>
   <define name="termNote">
     <element name="termNote">
