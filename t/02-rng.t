@@ -397,7 +397,7 @@ and descrip is special
             </termEntry>
 
 === termNote with forTermComp
-TBXChecker doesn't verify this
+TODO: TBXChecker doesn't verify this
 --- SKIP
 --- xcs xcs_with_datCats
 
@@ -463,10 +463,29 @@ TBXChecker doesn't verify this
             </termEntry>
 
 === hi
+TODO: TBXChecker doesn't verify this
 --- SKIP
---- good chomp
-hiGood.tbx
---- bad chomp
-hiBad.tbx
---- xcs chomp
-hi.xcs
+--- xcs xcs_with_datCats
+
+        <hiSpec name="emph" datcatId="">
+            <contents/>
+        </hiSpec>
+
+--- good tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <tig>
+                        <term id="foo"><hi type="emph" target="foo" xml:lang="en">foo</hi>
+                        <hi target="foo" xml:lang="en">bar</hi></term>
+                    </tig>
+                </langSet>
+            </termEntry>
+
+--- bad tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <tig>
+                        <term id="foo"><hi type="bad_cat" target="foo" xml:lang="en">foo</hi></term>
+                    </tig>
+                </langSet>
+            </termEntry>

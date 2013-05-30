@@ -132,7 +132,7 @@
   </define>
   <define name="attlist.hi" combine="interleave">
     <optional>
-      <attribute name="type"/>
+      <attribute xml:id="hi.type" name="type"/>
     </optional>
     <optional>
       <attribute name="target">

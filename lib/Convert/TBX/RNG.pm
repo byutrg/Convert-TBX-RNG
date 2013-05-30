@@ -108,8 +108,8 @@ sub _constrain_ref_objects {
 sub _constrain_meta_cats {
     my ( $twig, $data_cats ) = @_;
 
-# impIDLangTypTgtDtyp includes: admin(Note), descrip(Note), ref, termNote, transac(Note)
-# must account for ID, xml:lang, type, target, and datatype
+    # impIDLangTypTgtDtyp includes: admin(Note), descrip(Note), ref, termNote, transac(Note)
+    # must account for ID, xml:lang, type, target, and datatype
     for my $meta_cat (
         qw(admin adminNote
         descripNote ref transac transacNote descrip)
@@ -128,8 +128,6 @@ sub _constrain_meta_cats {
 
     # termNote: unless forTermComp="yes", remove from termCompGrp contents
     _constrain_termNote($twig, $data_cats->{'termNote'});
-    # if()
-    # TODO: what about termNoteGrp?
     # no longer use the attlists
     $twig->get_xpath( 'define[@name="attlist.termNote"]', 0)->delete;
 
@@ -140,13 +138,10 @@ sub _constrain_meta_cats {
     $twig->get_xpath( 'define[@name="impIDLangTypTgtDtyp"]', 0)->delete;
 
     # impIDType includes xref
-    # ID, type (URI)
+    # ID, type, target (URI)
 
-    # <termCompList>
-    # ID, type
-
+    _constrain_hi($twig, $data_cats->{'hi'});
     # <hi>
-    # type target xml:lang
 }
 
 # handles elements of impIDLangTypTgtDtyp which do not have level specifications
@@ -174,27 +169,46 @@ sub _edit_meta_cat {
 }
 
 sub _constrain_termCompList {
-  my ($twig, $data_cat_list) = @_;
+    my ($twig, $data_cat_list) = @_;
 
-  #disallow all content if none specified
-  if(!$data_cat_list){
-    $twig->get_xpath(
-    'define[@name="termCompList"]/' .
-    'element[@name="termCompList"]', 0)->set_outer_xml('<empty/>');
-    return;
-  }
-  my $termCompList_type_elt = $twig->get_xpath(
-    'define[@name="attlist.termCompList"]/' .
-    'attribute[@name="type"]', 0);
+    #disallow all content if none specified
+    if(!$data_cat_list){
+      $twig->get_xpath(
+      'define[@name="termCompList"]/' .
+      'element[@name="termCompList"]', 0)->set_outer_xml('<empty/>');
+      return;
+    }
+    my $termCompList_type_elt = $twig->get_xpath(
+      'define[@name="attlist.termCompList"]/' .
+      'attribute[@name="type"]', 0);
 
-  #create choices for type attribute
-  my $choice = XML::Twig::Elt->new('choice');
-  for my $data_cat ( @{$data_cat_list} ) {
-      XML::Twig::Elt->new('value',$data_cat->{'name'})->
-        paste($choice);
-  }
-  $choice->paste($termCompList_type_elt);
+    #create choices for type attribute
+    my $choice = XML::Twig::Elt->new('choice');
+    for my $data_cat ( @{$data_cat_list} ) {
+        XML::Twig::Elt->new('value',$data_cat->{'name'})->
+          paste($choice);
+    }
+    $choice->paste($termCompList_type_elt);
+}
 
+sub _constrain_hi {
+    my ($twig, $data_cat_list) = @_;
+
+    my $hi_type_elt = $twig->get_xpath('//*[@xml:id="hi.type"]', 0);
+
+    #disallow type if none are specified in XCS
+    if(!$data_cat_list){
+      $hi_type_elt->parent()->delete();
+      return;
+    }
+
+    #create choices for type attribute
+    my $choice = XML::Twig::Elt->new('choice');
+    for my $data_cat ( @{$data_cat_list} ) {
+        XML::Twig::Elt->new('value',$data_cat->{'name'})->
+          paste($choice);
+    }
+    $choice->paste($hi_type_elt);
 }
 
 # args are parsed twig and hash ref of data_categories
