@@ -542,7 +542,9 @@
   </define>
   <define name="attlist.xref" combine="interleave">
     <ref name="impIDType"/>
-    <attribute name="target"/>
+    <attribute name="target">
+      <data type="anyURI"/>
+    </attribute>
   </define>
   <!--
     ===================================================================================
