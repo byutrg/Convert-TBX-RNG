@@ -65,7 +65,6 @@ sub compare_validation {
             or note explain $messages;
 
         my $error = $jing->validate($tbx_file);
-        note $error if defined $error;
         #undefined error means it's valid, defined invalid
         ok((defined($error) xor $expected), 'Generated RNG')
             or ($error and note $error);
@@ -464,7 +463,7 @@ TODO: TBXChecker doesn't verify this
 
 === termNote with forTermComp, in termNoteGrp
 TODO: TBXChecker doesn't verify this
---- ONLY
+--- SKIP
 --- xcs xcs_with_datCats
 
         <termCompListSpec name="termElement" datcatId="ISO12620A-020802">
@@ -594,5 +593,208 @@ TODO: TBXChecker doesn't verify this
                     <tig>
                         <term id="foo">foo bar</term>
                     </tig>
+                </langSet>
+            </termEntry>
+
+=== descrip
+--- ONLY
+--- xcs xcs_with_datCats
+
+        <descripSpec name="general" datcatId="">
+            <contents/>
+            <levels>term termEntry langSet</levels>
+        </descripSpec>
+
+        <descripSpec name="termLangSet" datcatId="">
+            <contents/>
+            <levels>term langSet</levels>
+        </descripSpec>
+
+        <descripSpec name="termEntryLangSet" datcatId="">
+            <contents/>
+            <levels>termEntry langSet</levels>
+        </descripSpec>
+
+        <descripSpec name="termEntryTerm" datcatId="">
+            <contents/>
+            <levels>termEntry term</levels>
+        </descripSpec>
+
+        <descripSpec name="term" datcatId="">
+            <contents/>
+            <levels>term</levels>
+        </descripSpec>
+
+        <descripSpec name="termEntry" datcatId="">
+            <contents/>
+            <levels>termEntry</levels>
+        </descripSpec>
+
+        <descripSpec name="langSet" datcatId="">
+            <contents/>
+            <levels>langSet</levels>
+        </descripSpec>
+
+--- good tbx_with_body
+            <!-- Test all locations of descrip and descripGrp -->
+            <termEntry id="entry">
+
+                <!-- Descrips allowed in termEntry level -->
+                <descrip type="general" xml:lang="en" id="desc1" target="entry" datatype="text">
+                    description
+                </descrip>
+                <descrip type="termEntryLangSet" xml:lang="en" id="desc2" target="entry" datatype="text">
+                    description
+                </descrip>
+                <descrip type="termEntryTerm" xml:lang="en" id="desc3" target="entry" datatype="text">
+                    description
+                </descrip>
+                <descrip type="termEntry" xml:lang="en" id="desc4" target="entry" datatype="text">
+                    description
+                </descrip>
+
+                <descripGrp>
+                    <descrip type="general" xml:lang="en" id="desc5" target="entry" datatype="text">
+                        description
+                    </descrip>
+                </descripGrp>
+                <descripGrp>
+                    <descrip type="termEntryLangSet" xml:lang="en" id="desc6" target="entry" datatype="text">
+                        description
+                    </descrip>
+                </descripGrp>
+                <descripGrp>
+                    <descrip type="termEntryTerm" xml:lang="en" id="desc7" target="entry" datatype="text">
+                        description
+                    </descrip>
+                </descripGrp>
+                <descripGrp>
+                    <descrip type="termEntry" xml:lang="en" id="desc8" target="entry" datatype="text">
+                        description
+                    </descrip>
+                </descripGrp>
+                <!-- End descrips -->
+
+                <langSet xml:lang="en" id="langSet">
+
+                    <!-- Descrips allowed in langSet level -->
+                    <descrip type="general" xml:lang="en" id="desc9" target="langSet" datatype="text">
+                        description
+                    </descrip>
+                    <descrip type="termEntryLangSet" xml:lang="en" id="desc10" target="langSet" datatype="text">
+                        description
+                    </descrip>
+                    <descrip type="termLangSet" xml:lang="en" id="desc11" target="langSet" datatype="text">
+                        description
+                    </descrip>
+                    <descrip type="langSet" xml:lang="en" id="desc12" target="langSet" datatype="text">
+                        description
+                    </descrip>
+
+                    <descripGrp>
+                        <descrip type="general" xml:lang="en" id="desc13" target="langSet" datatype="text">
+                            description
+                        </descrip>
+                    </descripGrp>
+                    <descripGrp>
+                        <descrip type="termEntryLangSet" xml:lang="en" id="desc14" target="langSet" datatype="text">
+                            description
+                        </descrip>
+                    </descripGrp>
+                    <descripGrp>
+                        <descrip type="termLangSet" xml:lang="en" id="desc15" target="langSet" datatype="text">
+                            description
+                        </descrip>
+                    </descripGrp>
+                    <descripGrp>
+                        <descrip type="langSet" xml:lang="en" id="desc16" target="langSet" datatype="text">
+                            description
+                        </descrip>
+                    </descripGrp>
+                    <!-- End descrips -->
+
+                    <tig>
+                        <term id="term1">foo bar</term>
+
+                        <!-- Descrips allowed in term level -->
+                        <descrip type="general" xml:lang="en" id="desc17" target="term1" datatype="text">
+                            description
+                        </descrip>
+                        <descrip type="termEntryTerm" xml:lang="en" id="desc18" target="term1" datatype="text">
+                            description
+                        </descrip>
+                        <descrip type="termLangSet" xml:lang="en" id="desc19" target="term1" datatype="text">
+                            description
+                        </descrip>
+                        <descrip type="term" xml:lang="en" id="desc20" target="term1" datatype="text">
+                            description
+                        </descrip>
+
+                        <descripGrp>
+                            <descrip type="general" xml:lang="en" id="desc21" target="term1" datatype="text">
+                                description
+                            </descrip>
+                        </descripGrp>
+                        <descripGrp>
+                            <descrip type="termEntryTerm" xml:lang="en" id="desc22" target="term1" datatype="text">
+                                description
+                            </descrip>
+                        </descripGrp>
+                        <descripGrp>
+                            <descrip type="termLangSet" xml:lang="en" id="desc23" target="term1" datatype="text">
+                                description
+                            </descrip>
+                        </descripGrp>
+                        <descripGrp>
+                            <descrip type="term" xml:lang="en" id="desc24" target="term1" datatype="text">
+                                description
+                            </descrip>
+                        </descripGrp>
+                        <!-- End descrips -->
+
+                    </tig>
+                    <ntig id="ntig">
+
+                        <termGrp>
+                            <term id="term2">baz</term>
+                        </termGrp>
+
+                        <!-- Descrips allowed in term level -->
+                        <descrip type="general" xml:lang="en" id="desc25" target="ntig" datatype="text">
+                            description
+                        </descrip>
+                        <descrip type="termEntryTerm" xml:lang="en" id="desc26" target="ntig" datatype="text">
+                            description
+                        </descrip>
+                        <descrip type="termLangSet" xml:lang="en" id="desc27" target="ntig" datatype="text">
+                            description
+                        </descrip>
+                        <descrip type="term" xml:lang="en" id="desc28" target="ntig" datatype="text">
+                            description
+                        </descrip>
+
+                        <descripGrp>
+                            <descrip type="general" xml:lang="en" id="desc29" target="ntig" datatype="text">
+                                description
+                            </descrip>
+                        </descripGrp>
+                        <descripGrp>
+                            <descrip type="termEntryTerm" xml:lang="en" id="desc30" target="ntig" datatype="text">
+                                description
+                            </descrip>
+                        </descripGrp>
+                        <descripGrp>
+                            <descrip type="termLangSet" xml:lang="en" id="desc31" target="ntig" datatype="text">
+                                description
+                            </descrip>
+                        </descripGrp>
+                        <descripGrp>
+                            <descrip type="term" xml:lang="en" id="desc32" target="ntig" datatype="text">
+                                description
+                            </descrip>
+                        </descripGrp>
+                        <!-- End descrips -->
+
+                    </ntig>
                 </langSet>
             </termEntry>
