@@ -197,7 +197,6 @@ sub _constrain_optional_type {
 
     #disallow type if none are specified in XCS
     if(!$data_cat_list){
-      warn "found nothing for $meta_type";
       $type_elt->parent()->delete();
       return;
     }

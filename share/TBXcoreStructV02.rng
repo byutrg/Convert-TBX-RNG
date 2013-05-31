@@ -376,7 +376,7 @@
       <zeroOrMore>
         <choice>
           <ref name="termCompGrp.termNote"/>
-          <ref name="termNoteGrp"/>
+          <ref name="termCompGrp.termNoteGrp"/>
         </choice>
       </zeroOrMore>
       <ref name="noteLinkInfo"/>
@@ -462,6 +462,14 @@
   </define>
   <define name="attlist.termNote" combine="interleave">
     <ref name="impIDLangTypTgtDtyp"/>
+  </define>
+  <!-- Special termNoteGrp to be used with datCats allowed in termpCompGrps -->
+  <define name="termCompGrp.termNoteGrp">
+    <element name="termNoteGrp">
+      <ref name="attlist.termNoteGrp"/>
+      <ref name="termCompGrp.termNote"/>
+      <ref name="noteLinkInfo"/>
+    </element>
   </define>
   <define name="termNoteGrp">
     <element name="termNoteGrp">

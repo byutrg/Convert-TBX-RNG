@@ -462,6 +462,78 @@ TODO: TBXChecker doesn't verify this
                 </langSet>
             </termEntry>
 
+=== termNote with forTermComp, in termNoteGrp
+TODO: TBXChecker doesn't verify this
+--- ONLY
+--- xcs xcs_with_datCats
+
+        <termCompListSpec name="termElement" datcatId="ISO12620A-020802">
+            <contents forTermComp="yes"/>
+        </termCompListSpec>
+
+        <termNoteSpec name="generalNote" datcatId="">
+            <contents/>
+        </termNoteSpec>
+
+        <termNoteSpec name="compNote" datcatId="">
+            <contents forTermComp="yes"/>
+        </termNoteSpec>
+
+--- good tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <ntig>
+                        <termGrp>
+                            <term id="foo">foo</term>
+                            <termNote type="generalNote" id="bar" datatype="text" xml:lang="en" target="foo">
+                                some note
+                            </termNote>
+                            <termNote type="compNote" id="baz" datatype="text" xml:lang="en" target="foo">
+                                some note
+                            </termNote>
+                            <termCompList type="termElement">
+                                <termCompGrp>
+                                    <termComp id="buzz" xml:lang="en">
+                                        some
+                                    </termComp>
+                                    <termNoteGrp id="quz">
+                                        <termNote type="compNote" id="biz" datatype="text" xml:lang="en" target="buzz">
+                                            some note
+                                        </termNote>
+                                        <note>Here is a group!</note>
+                                    </termNoteGrp>
+                                </termCompGrp>
+                            </termCompList>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+
+--- bad tbx_with_body
+           <termEntry>
+                <langSet xml:lang="en">
+                    <ntig>
+                        <termGrp>
+                            <term id="foo">foo</term>
+                            <termCompList type="termElement">
+                                <termCompGrp>
+                                    <termComp id="buzz" xml:lang="en">
+                                        some
+                                    </termComp>
+                                    <!-- This is disallowed at this level-->
+                                    <termNoteGrp id="quz">
+                                        <termNote type="bad_cat" id="biz" datatype="text" xml:lang="en" target="buzz">
+                                            some note
+                                        </termNote>
+                                        <note>Here is a group!</note>
+                                    </termNoteGrp>
+                                </termCompGrp>
+                            </termCompList>
+                        </termGrp>
+                    </ntig>
+                </langSet>
+            </termEntry>
+
 === hi
 TODO: TBXChecker doesn't verify this
 --- SKIP
