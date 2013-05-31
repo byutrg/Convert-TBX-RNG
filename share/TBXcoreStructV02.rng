@@ -202,7 +202,7 @@
     ================================================================================
   -->
   <define name="admin">
-    <element name="admin">
+    <element name="admin" xml:id="admin.element">
       <ref name="attlist.admin"/>
       <ref name="noteText"/>
     </element>
@@ -232,7 +232,7 @@
     </optional>
   </define>
   <define name="adminNote">
-    <element name="adminNote">
+    <element name="adminNote" xml:id="adminNote.element">
       <ref name="attlist.adminNote"/>
       <text/>
     </element>
@@ -254,7 +254,7 @@
     </optional>
   </define>
   <define name="descrip">
-    <element name="descrip">
+    <element name="descrip" xml:id="descrip.element">
       <ref name="attlist.descrip"/>
       <ref name="noteText"/>
     </element>
@@ -287,7 +287,7 @@
     </optional>
   </define>
   <define name="descripNote">
-    <element name="descripNote">
+    <element name="descripNote" xml:id="descripNote.element">
       <ref name="attlist.descripNote"/>
       <text/>
     </element>
@@ -339,7 +339,7 @@
     </optional>
   </define>
   <define name="ref">
-    <element name="ref">
+    <element name="ref" xml:id="ref.element">
       <ref name="attlist.ref"/>
       <text/>
     </element>
@@ -390,7 +390,7 @@
     </optional>
   </define>
   <define name="termCompList">
-    <element name="termCompList">
+    <element name="termCompList" xml:id="termCompList.element">
       <ref name="attlist.termCompList"/>
       <ref name="auxInfo"/>
       <oneOrMore>
@@ -407,7 +407,7 @@
         <data type="ID"/>
       </attribute>
     </optional>
-    <attribute name="type"/>
+    <attribute name="type" xml:id="termCompList.type"/>
   </define>
   <define name="termEntry">
     <element name="termEntry">
@@ -449,13 +449,13 @@
   </define>
   <!-- For the termNotes used in termCompGrp -->
   <define name="termCompGrp.termNote">
-    <element name="termNote">
+    <element name="termNote" xml:id="termComp.termNote.element">
       <ref name="attlist.termNote"/>
       <ref name="noteText"/>
     </element>
   </define>
   <define name="termNote">
-    <element name="termNote">
+    <element name="termNote" xml:id="termNote.element">
       <ref name="attlist.termNote"/>
       <ref name="noteText"/>
     </element>
@@ -495,7 +495,7 @@
     </optional>
   </define>
   <define name="transac">
-    <element name="transac">
+    <element name="transac" xml:id="transac.element">
       <ref name="attlist.transac"/>
       <text/>
     </element>
@@ -526,7 +526,7 @@
     </optional>
   </define>
   <define name="transacNote">
-    <element name="transacNote">
+    <element name="transacNote" xml:id="transacNote.element">
       <ref name="attlist.transacNote"/>
       <text/>
     </element>

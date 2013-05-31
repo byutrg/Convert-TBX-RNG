@@ -116,8 +116,7 @@ sub _constrain_meta_cats {
       )
     {
         my $elt = $twig->get_xpath(
-          "define[\@name='$meta_cat']/" .
-          "element[\@name='$meta_cat']", 0);
+          "//*[\@xml:id='$meta_cat.element']", 0) or die "failed to find $meta_cat.element";
         _edit_meta_cat($elt, $data_cats->{$meta_cat});
 
         #we no longer use the attlists
@@ -174,13 +173,11 @@ sub _constrain_termCompList {
     #disallow all content if none specified
     if(!$data_cat_list){
       $twig->get_xpath(
-      'define[@name="termCompList"]/' .
-      'element[@name="termCompList"]', 0)->set_outer_xml('<empty/>');
+      '//*[@xml:id="termCompList.element"]', 0)->set_outer_xml('<empty/>');
       return;
     }
     my $termCompList_type_elt = $twig->get_xpath(
-      'define[@name="attlist.termCompList"]/' .
-      'attribute[@name="type"]', 0);
+      '//*[@xml:id="termCompList.type"]', 0);
 
     #create choices for type attribute
     my $choice = XML::Twig::Elt->new('choice');
@@ -215,11 +212,9 @@ sub _constrain_hi {
 sub _constrain_termNote {
   my ($twig, $data_cat_list) = @_;
   my $termNote_elt = $twig->get_xpath(
-          'define[@name="termNote"]/' .
-          'element[@name="termNote"]', 0) or die 'coulnd"t find termNote';
+          '//*[@xml:id="termNote.element"]', 0) or die 'coulnd"t find termNote';
   my $termNote_termCompGrp_elt = $twig->get_xpath(
-          'define[@name="termCompGrp.termNote"]/' .
-          'element[@name="termNote"]', 0) or die 'coulnd"t find termCompGrp.termNote';
+          '//*[@xml:id="termComp.termNote.element"]', 0);
 
     #disallow content if none specified
     unless ( $data_cat_list ) {
