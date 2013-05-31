@@ -65,7 +65,7 @@ sub compare_validation {
             or note explain $messages;
 
         my $error = $jing->validate($tbx_file);
-        print $error if defined $error;
+        note $error if defined $error;
         #undefined error means it's valid, defined invalid
         ok((defined($error) xor $expected), 'Generated RNG')
             or ($error and note $error);
@@ -486,6 +486,41 @@ TODO: TBXChecker doesn't verify this
                 <langSet xml:lang="en">
                     <tig>
                         <term id="foo"><hi type="bad_cat" target="foo" xml:lang="en">foo</hi></term>
+                    </tig>
+                </langSet>
+            </termEntry>
+
+=== xref
+TODO: TBXChecker doesn't verify this
+--- SKIP
+--- xcs xcs_with_datCats
+
+        <xrefSpec name="wikipedia" datcatId="">
+            <contents/>
+        </xrefSpec>
+
+--- good tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <xref id="fooBar" type="wikipedia"
+                        target="http://en.wikipedia.org/wiki/Foobar">
+                        see Wikipedia
+                    </xref>
+                    <tig>
+                        <term id="foo">foo bar</term>
+                    </tig>
+                </langSet>
+            </termEntry>
+
+--- bad tbx_with_body
+            <termEntry>
+                <langSet xml:lang="en">
+                    <xref id="fooBar" type="bad_cat"
+                        target="http://en.wikipedia.org/wiki/Foobar">
+                        see Wikipedia
+                    </xref>
+                    <tig>
+                        <term id="foo">foo bar</term>
                     </tig>
                 </langSet>
             </termEntry>

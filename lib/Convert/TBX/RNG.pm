@@ -136,11 +136,11 @@ sub _constrain_meta_cats {
     # we leave no reference to this entity
     $twig->get_xpath( 'define[@name="impIDLangTypTgtDtyp"]', 0)->delete;
 
-    # impIDType includes xref
-    # ID, type, target (URI)
-
-    _constrain_hi($twig, $data_cats->{'hi'});
-    # <hi>
+    # hi and xref are similar because all that needs constraining is
+    # an optional type attribute
+    for my $meta_type(qw(hi xref)){
+        _constrain_optional_type($twig, $meta_type, $data_cats->{$meta_type});
+    }
 }
 
 # handles elements of impIDLangTypTgtDtyp which do not have level specifications
@@ -188,14 +188,17 @@ sub _constrain_termCompList {
     $choice->paste($termCompList_type_elt);
 }
 
-sub _constrain_hi {
-    my ($twig, $data_cat_list) = @_;
+#use for meta data category with an optional type (hi and xref)
+sub _constrain_optional_type {
+    my ($twig, $meta_type, $data_cat_list) = @_;
 
-    my $hi_type_elt = $twig->get_xpath('//*[@xml:id="hi.type"]', 0);
+    my $type_elt = $twig->get_xpath(
+        "//*[\@xml:id='$meta_type.type']", 0);
 
     #disallow type if none are specified in XCS
     if(!$data_cat_list){
-      $hi_type_elt->parent()->delete();
+      warn "found nothing for $meta_type";
+      $type_elt->parent()->delete();
       return;
     }
 
@@ -205,7 +208,7 @@ sub _constrain_hi {
         XML::Twig::Elt->new('value',$data_cat->{'name'})->
           paste($choice);
     }
-    $choice->paste($hi_type_elt);
+    $choice->paste($type_elt);
 }
 
 # args are parsed twig and hash ref of data_categories
