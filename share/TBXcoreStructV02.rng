@@ -32,11 +32,11 @@
       </choice>
     </zeroOrMore>
   </define>
-  <define name="auxInfo">
+
+  <!-- Needed to allow constraining appearance of descrip and descripGrp -->
+  <define name="auxInfoMinusDescrips">
     <zeroOrMore>
       <choice>
-        <ref name="descrip"/>
-        <ref name="descripGrp"/>
         <ref name="admin"/>
         <ref name="adminGrp"/>
         <ref name="transacGrp"/>
@@ -253,19 +253,29 @@
       </attribute>
     </optional>
   </define>
-  <define name="descrip">
-    <element name="descrip" xml:id="descrip.element">
-      <ref name="attlist.descrip"/>
-      <ref name="noteText"/>
+
+  <define name="term.descripGrp">
+    <element name="descripGrp">
+      <ref name="term.descrip"/>
+      <ref name="commonContents.descripGrp"/>
     </element>
   </define>
-  <define name="attlist.descrip" combine="interleave">
-    <ref name="impIDLangTypTgtDtyp"/>
-  </define>
-  <define name="descripGrp">
+  <define name="langSet.descripGrp">
     <element name="descripGrp">
+      <ref name="langSet.descrip"/>
+      <ref name="commonContents.descripGrp"/>
+    </element>
+  </define>
+  <define name="termEntry.descripGrp">
+    <element name="descripGrp">
+      <ref name="termEntry.descrip"/>
+      <ref name="commonContents.descripGrp"/>
+    </element>
+  </define>
+
+  <!-- Contents shared by descripGrp's of all levels -->
+  <define name="commonContents.descripGrp">
       <ref name="attlist.descripGrp"/>
-      <ref name="descrip"/>
       <zeroOrMore>
         <choice>
           <ref name="descripNote"/>
@@ -277,8 +287,30 @@
           <ref name="xref"/>
         </choice>
       </zeroOrMore>
+  </define>
+
+  <define name="term.descrip">
+    <element name="descrip" xml:id="term.descrip.element">
+      <ref name="attlist.descrip"/>
+      <ref name="noteText"/>
     </element>
   </define>
+  <define name="langSet.descrip">
+    <element name="descrip" xml:id="langSet.descrip.element">
+      <ref name="attlist.descrip"/>
+      <ref name="noteText"/>
+    </element>
+  </define>
+  <define name="termEntry.descrip">
+    <element name="descrip" xml:id="termEntry.descrip.element">
+      <ref name="attlist.descrip"/>
+      <ref name="noteText"/>
+    </element>
+  </define>
+  <define name="attlist.descrip" combine="interleave">
+    <ref name="impIDLangTypTgtDtyp"/>
+  </define>
+
   <define name="attlist.descripGrp" combine="interleave">
     <optional>
       <attribute name="id">
@@ -298,7 +330,15 @@
   <define name="langSet">
     <element name="langSet">
       <ref name="attlist.langSet"/>
-      <ref name="auxInfo"/>
+      <interleave>
+        <ref name="auxInfoMinusDescrips"/>
+        <zeroOrMore>
+          <choice>
+            <ref name="langSet.descrip"/>
+            <ref name="langSet.descripGrp"/>
+          </choice>
+        </zeroOrMore>
+      </interleave>
       <oneOrMore>
         <choice>
           <ref name="tig"/>
@@ -328,7 +368,15 @@
     <element name="ntig">
       <ref name="attlist.ntig"/>
       <ref name="termGrp"/>
-      <ref name="auxInfo"/>
+      <interleave>
+        <ref name="auxInfoMinusDescrips"/>
+        <zeroOrMore>
+          <choice>
+            <ref name="term.descrip"/>
+            <ref name="term.descripGrp"/>
+          </choice>
+        </zeroOrMore>
+      </interleave>
     </element>
   </define>
   <define name="attlist.ntig" combine="interleave">
@@ -392,7 +440,7 @@
   <define name="termCompList">
     <element name="termCompList" xml:id="termCompList.element">
       <ref name="attlist.termCompList"/>
-      <ref name="auxInfo"/>
+      <ref name="auxInfoMinusDescrips"/>
       <oneOrMore>
         <choice>
           <ref name="termComp"/>
@@ -412,7 +460,15 @@
   <define name="termEntry">
     <element name="termEntry">
       <ref name="attlist.termEntry"/>
-      <ref name="auxInfo"/>
+      <interleave>
+        <ref name="auxInfoMinusDescrips"/>
+        <zeroOrMore>
+          <choice>
+            <ref name="termEntry.descrip"/>
+            <ref name="termEntry.descripGrp"/>
+          </choice>
+        </zeroOrMore>
+      </interleave>
       <oneOrMore>
         <ref name="langSet"/>
       </oneOrMore>
@@ -492,7 +548,15 @@
       <zeroOrMore>
         <ref name="termNote"/>
       </zeroOrMore>
-      <ref name="auxInfo"/>
+      <interleave>
+        <ref name="auxInfoMinusDescrips"/>
+        <zeroOrMore>
+          <choice>
+            <ref name="term.descrip"/>
+            <ref name="term.descripGrp"/>
+          </choice>
+        </zeroOrMore>
+      </interleave>
     </element>
   </define>
   <define name="attlist.tig" combine="interleave">

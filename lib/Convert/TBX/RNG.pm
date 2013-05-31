@@ -113,7 +113,7 @@ sub _constrain_meta_cats {
     # must account for ID, xml:lang, type, target, and datatype
     for my $meta_cat (
         qw(admin adminNote
-        descripNote ref transac transacNote descrip)
+        descripNote ref transac transacNote)
       )
     {
         my $elt = $twig->get_xpath(
@@ -126,13 +126,14 @@ sub _constrain_meta_cats {
 
     _constrain_termCompList($twig, $data_cats->{'termCompList'});
 
-    # termNote: unless forTermComp="yes", remove from termCompGrp contents
+    # similar to above meta data cats, but with two levels
     _constrain_termNote($twig, $data_cats->{'termNote'});
     # no longer use the attlists
     $twig->get_xpath( 'define[@name="attlist.termNote"]', 0)->delete;
 
-   # descrip and termNote are like above, but with levels
-   # $twig->setTwigHandler('define[@name="attlist.descrip"]', sub {$_->delete});
+    # similar to above meta data cats, but with three levels
+    _constrain_descrip($twig, $data_cats->{'descrip'});
+    $twig->get_xpath('define[@name="attlist.descrip"]', 0)->delete;
 
     # we leave no reference to this entity
     $twig->get_xpath( 'define[@name="impIDLangTypTgtDtyp"]', 0)->delete;
@@ -214,10 +215,12 @@ sub _constrain_optional_type {
 # args are parsed twig and hash ref of data_categories
 sub _constrain_termNote {
   my ($twig, $data_cat_list) = @_;
-  my $termNote_elt = $twig->get_xpath(
-          '//*[@xml:id="termNote.element"]', 0) or die 'coulnd"t find termNote';
-  my $termNote_termCompGrp_elt = $twig->get_xpath(
-          '//*[@xml:id="termComp.termNote.element"]', 0);
+
+    #elements present at the two levels
+    my $termNote_elt = $twig->get_xpath(
+            '//*[@xml:id="termNote.element"]', 0) or die 'coulnd"t find termNote';
+    my $termNote_termCompGrp_elt = $twig->get_xpath(
+            '//*[@xml:id="termComp.termNote.element"]', 0);
 
     #disallow content if none specified
     unless ( $data_cat_list ) {
@@ -232,6 +235,41 @@ sub _constrain_termNote {
 
     #edit the data categories for the other levels
     _edit_meta_cat($termNote_elt, $data_cat_list);
+}
+
+sub _constrain_descrip {
+  my ($twig, $data_cat_list) = @_;
+
+    # elements present at the three levels
+    my $term_descrip_elt = $twig->get_xpath(
+            '//*[@xml:id="term.descrip.element"]', 0) or die q(couldn't find it!);
+    my $langSet_descrip_elt = $twig->get_xpath(
+            '//*[@xml:id="langSet.descrip.element"]', 0) or die q(couldn't find it!);
+    my $termEntry_descrip_elt = $twig->get_xpath(
+            '//*[@xml:id="termEntry.descrip.element"]', 0) or die q(couldn't find it!);
+
+    #disallow content if none specified
+    unless ( $data_cat_list ) {
+        $_->set_outer_xml('<empty/>')
+            for (($term_descrip_elt, $langSet_descrip_elt, $termEntry_descrip_elt));
+        return;
+    }
+
+    #find the data categories for each level
+    my @term_cats = grep { _descrip_has_level('term',$_) } @$data_cat_list;
+    my @langSet_cats = grep { _descrip_has_level('langSet',$_) } @$data_cat_list;
+    my @termEntry_cats = grep { _descrip_has_level('termEntry',$_) } @$data_cat_list;
+
+    #edit the allowed types at each level
+    _edit_meta_cat($term_descrip_elt, \@term_cats);
+    _edit_meta_cat($langSet_descrip_elt, \@langSet_cats);
+    _edit_meta_cat($termEntry_descrip_elt, \@termEntry_cats);
+}
+
+#check if a descrip data category has a specified level
+sub _descrip_has_level {
+    my ($level, $data_cat) = @_;
+    return grep {$_ eq $level} @{$data_cat->{levels}};
 }
 
 #arg: hash ref containing data category information
