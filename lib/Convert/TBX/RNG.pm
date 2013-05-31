@@ -16,7 +16,7 @@ use Exporter::Easy (
 
 # VERSION
 
-# ABSTRACT: Create new TBX dialects
+# ABSTRACT: Create an RNG to validate a TBX dialect
 
 =head1 SYNOPSIS
     use Convert::TBX::RNG qw(generate_rng);
@@ -76,7 +76,6 @@ sub generate_rng {
     _constrain_ref_objects( $twig, $xcs->get_ref_objects() );
     _constrain_meta_cats( $twig, $xcs->get_data_cats() );
 
-
     my $rng = $twig->sprint;
     return \$rng;
 }
@@ -85,7 +84,7 @@ sub generate_rng {
 sub _constrain_languages {
     my ( $twig, $languages ) = @_;
 
-    #make an RNG spec for xml:lang, to be placed
+    #make an RNG choice for the xml:lang attribute of langSet
     my $choice    = XML::Twig::Elt->new('choice');
     my @lang_spec = ('choice');
     for my $abbrv ( sort keys %$languages ) {
@@ -213,6 +212,7 @@ sub _constrain_optional_type {
 }
 
 # args are parsed twig and hash ref of data_categories
+# constrain allowed values for termNotes at each level
 sub _constrain_termNote {
   my ($twig, $data_cat_list) = @_;
 
@@ -237,6 +237,8 @@ sub _constrain_termNote {
     _edit_meta_cat($termNote_elt, $data_cat_list);
 }
 
+# args are parsed twig and hash ref of data_categories
+# constrain allowed values for descrips at each level
 sub _constrain_descrip {
   my ($twig, $data_cat_list) = @_;
 
@@ -272,7 +274,8 @@ sub _descrip_has_level {
     return grep {$_ eq $level} @{$data_cat->{levels}};
 }
 
-#arg: hash ref containing data category information
+# arg: hash ref containing data category information
+# returns an RNG group element containing contents of data category
 sub _get_rng_group_for_datacat {
     my ($data_cat) = @_;
     my $group = XML::Twig::Elt->new('group');
@@ -287,6 +290,8 @@ sub _get_rng_group_for_datacat {
     return $group;
 }
 
+# arg: attribute name, attribute value
+# return RNG attribute element with value as contents
 sub _get_rng_attribute {
     my ($name, $value) = @_;
     return XML::Twig::Elt->parse(
@@ -306,6 +311,8 @@ sub _get_rng_picklist {
 =head2 C<core_structure_rng>
 
 Returns a pointer to a string containing the TBX core structure (version 2) RNG.
+This RNG file has been edited to make processing by this module easier, but it
+still properly validates the core structure of a TBX file.
 
 =cut
 
@@ -323,12 +330,21 @@ sub _core_structure_rng_location {
 RNG does not validate IDREF attributes, unlike DTD. Therefore, you will not
 be able to check that target attributes refer to actual IDs within the file.
 
+Most of the functionality of the produced RNG files matches the TBX Checker exactly;
+however, some features remain unimplemented in the TBXChecker, and so behavior may not
+always match.
+
 =head1 FUTURE WORK
+
+Currently, nothing is done to check the validity of ref objects; the RNG validates only
+their core structure.
 
 In the future we may provide functionality to tweak the TBX core structure.
 
 =head1 SEE ALSO
 
+Other features and documentation to help validate TBX documents can be found on
+our L<gitHub|https://github.com/byutrg/TBX-Spec> page.
 
 1;
 
