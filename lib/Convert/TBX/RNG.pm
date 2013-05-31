@@ -52,6 +52,7 @@ sub generate_rng {
     }
     my $xcs = TBX::XCS->new();
     if ( $args{xcs_file} ) {
+      warn $args{xcs_file};
         $xcs->parse( file => $args{xcs_file} );
     }
     else {

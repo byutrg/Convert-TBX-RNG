@@ -1,12 +1,65 @@
 package t::TestRNG;
 use Test::Base -Base;
+use Test::More 0.88;
+use TBX::Checker qw(check);
+use File::Slurp;
+use File::Temp;
+use FindBin qw($Bin);
+use Path::Tiny;
+use feature 'state';
+our @EXPORT = qw(compare_validation remove_temps);
+
+my $corpus_dir = path($Bin, 'corpus');
+my $temp_xcs = path($corpus_dir, 'temp.xcs');
+
+# pass in a pre-loaded XML::Jing, the name of the TBX file to check, and a boolean
+# representing whether the file should be valid
+#  Tests for TBX validity via $jing and via TBX::Checker
+sub compare_validation {
+    # (my ($self), @_) = find_my_self(@_); #doesn't work quite right...
+    my ($jing, $tbx_string, $expected) = @_;
+
+    state $temp_tbx = File::Temp->new(TEMPLATE => 'tbx.temp.XXXX', DIR => $corpus_dir);
+    write_file($temp_tbx->filename, $tbx_string);
+
+    subtest 'TBX should ' . ($expected ? q() : 'not ') . 'be valid' =>
+    sub {
+        plan tests => 2;
+
+        my ($valid, $messages) = check($temp_tbx->filename);
+        is($valid, $expected, 'TBXChecker')
+            or note explain $messages;
+
+        my $error = $jing->validate($temp_tbx->filename);
+        #undefined error means it's valid, defined invalid
+        ok((defined($error) xor $expected), 'Generated RNG')
+            or ($error and note $error);
+    };
+    # unlink $temp_tbx;
+}
+
+#delete temporary files used for testing
+sub remove_temps {
+    unlink $temp_xcs;
+}
 
 1;
 
 package t::TestRNG::Filter;
 use Test::Base::Filter -base;
 use Data::Section::Simple qw (get_data_section);
-use Data::Dumper;
+use File::Temp;
+use File::Slurp;
+use File::Temp;
+use feature 'state';
+
+#write the xcs to a temp file and return a File::Temp object
+sub write_xcs{
+    my ($self, $xcs_contents) = @_;
+    # print $$xcs_contents;
+    write_file($temp_xcs, $xcs_contents);
+    return $temp_xcs;
+}
 
 my $data = get_data_section;
 
