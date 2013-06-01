@@ -12,27 +12,31 @@ our @EXPORT = qw(compare_validation remove_temps);
 my $corpus_dir = path($Bin, 'corpus');
 my $temp_xcs = path($corpus_dir, 'temp.xcs');
 
-# pass in a pre-loaded XML::Jing, the name of the TBX file to check, and a boolean
+# pass in a pre-loaded XML::Jing, the name of the TBX file to check, and a boolean (expect to pass?)
 # representing whether the file should be valid
 #  Tests for TBX validity via $jing and via TBX::Checker
 sub compare_validation {
     # (my ($self), @_) = find_my_self(@_); #doesn't work quite right...
-    my ($jing, $tbx_string, $expected) = @_;
+    my ($jing, $tbx_string, $should_pass) = @_;
 
     state $temp_tbx = File::Temp->new(TEMPLATE => 'tbx.temp.XXXX', DIR => $corpus_dir);
     write_file($temp_tbx->filename, $tbx_string);
 
-    subtest 'TBX should ' . ($expected ? q() : 'not ') . 'be valid' =>
+    subtest 'TBX should ' . ($should_pass ? q() : 'not ') . 'be valid' =>
     sub {
-        plan tests => 2;
+        plan tests => 3 - ($should_pass ? 1 : 0);
 
         my ($valid, $messages) = check($temp_tbx->filename);
-        is($valid, $expected, 'TBXChecker')
+        is($valid, $should_pass, 'TBXChecker')
             or note explain $messages;
+        if(!$should_pass){
+            ok((grep {$_ =~ /XCS Adherence Errors/} @$messages),
+                'XCS adherence was the cause of failure');
+        }
 
         my $error = $jing->validate($temp_tbx->filename);
         #undefined error means it's valid, defined invalid
-        ok((defined($error) xor $expected), 'Generated RNG')
+        ok((defined($error) xor $should_pass), 'Generated RNG')
             or ($error and note $error);
     };
     # unlink $temp_tbx;
