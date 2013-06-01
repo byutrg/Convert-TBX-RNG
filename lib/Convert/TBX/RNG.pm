@@ -59,7 +59,7 @@ sub generate_rng {
         $xcs->parse( string => $args{xcs} );
     }
 
-    my $twig = new XML::Twig(
+    my $twig = XML::Twig->new(
         pretty_print    => 'indented',
         output_encoding => 'UTF-8',
         do_not_chain_handlers =>
@@ -102,6 +102,7 @@ sub _constrain_ref_objects {
     my ( $rng, $ref_objects ) = @_;
 
     #unimplemented
+    return;
 }
 
 # constrain meta-data cats by their data cats
@@ -142,6 +143,8 @@ sub _constrain_meta_cats {
     for my $meta_type(qw(hi xref)){
         _constrain_optional_type($twig, $meta_type, $data_cats->{$meta_type});
     }
+
+    return;
 }
 
 # handles elements of impIDLangTypTgtDtyp which do not have level specifications
@@ -166,6 +169,8 @@ sub _edit_meta_cat {
     #allow ID, xml:lang, target, and datatype
     XML::Twig::Elt->new( 'ref', { name => 'impIDLangTgtDtyp' } )
       ->paste($meta_cat_elt);
+
+    return;
 }
 
 sub _constrain_termCompList {
@@ -187,6 +192,8 @@ sub _constrain_termCompList {
           paste($choice);
     }
     $choice->paste($termCompList_type_elt);
+
+    return;
 }
 
 #use for meta data category with an optional type (hi and xref)
@@ -209,6 +216,8 @@ sub _constrain_optional_type {
           paste($choice);
     }
     $choice->paste($type_elt);
+
+    return;
 }
 
 # args are parsed twig and hash ref of data_categories
@@ -235,6 +244,8 @@ sub _constrain_termNote {
 
     #edit the data categories for the other levels
     _edit_meta_cat($termNote_elt, $data_cat_list);
+
+    return;
 }
 
 # args are parsed twig and hash ref of data_categories
@@ -266,6 +277,8 @@ sub _constrain_descrip {
     _edit_meta_cat($term_descrip_elt, \@term_cats);
     _edit_meta_cat($langSet_descrip_elt, \@langSet_cats);
     _edit_meta_cat($termEntry_descrip_elt, \@termEntry_cats);
+
+    return;
 }
 
 #check if a descrip data category has a specified level
@@ -324,6 +337,8 @@ sub core_structure_rng {
 sub _core_structure_rng_location {
     return path( dist_dir('XML-TBX-Dialect'), 'TBXcoreStructV02.rng' );
 }
+
+1;
 
 =head1 GOTCHAS
 
