@@ -16,10 +16,14 @@ my $temp_xcs = path($corpus_dir, 'temp.xcs');
 # representing whether the file should be valid
 #  Tests for TBX validity via $jing and via TBX::Checker
 sub compare_validation {
-    # (my ($self), @_) = find_my_self(@_); #doesn't work quite right...
+    ($self, @_) = find_my_self($self, @_);
     my ($jing, $tbx_string, $should_pass) = @_;
+    warn ref $jing;
 
-    state $temp_tbx = File::Temp->new(TEMPLATE => 'tbx.temp.XXXX', DIR => $corpus_dir);
+    state $temp_tbx = File::Temp->new(
+        TEMPLATE => 'tbx.temp.XXXX',
+        DIR => $corpus_dir,
+    );
     write_file($temp_tbx->filename, $tbx_string);
 
     subtest 'TBX should ' . ($should_pass ? q() : 'not ') . 'be valid' =>

@@ -34,11 +34,11 @@ for my $block(blocks){
     my $jing = XML::Jing->new($rng_tmp->filename);
 
     for my $good( $block->good ){
-        compare_validation(undef, $jing, $good, 1);
+        compare_validation($jing, $good, 1);
     }
 
     for my $bad( $block->bad ){
-        compare_validation(undef, $jing, $bad, 0);
+        compare_validation($jing, $bad, 0);
     }
 }
 
