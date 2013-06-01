@@ -69,10 +69,10 @@ TODO: TBXChecker doesn't verify this
                     <ntig>
                         <termGrp>
                             <term id="foo">foo</term>
-                            <termNote type="generalNote" id="bar" datatype="text" xml:lang="en" target="foo">
+                            <termNote type="generalNote" id="bar" xml:lang="en">
                                 some note
                             </termNote>
-                            <termNote type="compNote" id="baz" datatype="text" xml:lang="en" target="foo">
+                            <termNote type="compNote" id="baz" xml:lang="en">
                                 some note
                             </termNote>
                             <termCompList type="termElement">
@@ -80,7 +80,7 @@ TODO: TBXChecker doesn't verify this
                                     <termComp id="buzz" xml:lang="en">
                                         some
                                     </termComp>
-                                    <termNote type="compNote" id="biz" datatype="text" xml:lang="en" target="buzz">
+                                    <termNote type="compNote" id="biz" xml:lang="en" target="buzz">
                                         some note
                                     </termNote>
                                 </termCompGrp>
@@ -102,7 +102,7 @@ TODO: TBXChecker doesn't verify this
                                         some
                                     </termComp>
                                     <!-- This is disallowed at this level-->
-                                    <termNote type="generalNote" id="biz" datatype="text" xml:lang="en" target="buzz">
+                                    <termNote type="generalNote" id="biz" xml:lang="en" target="buzz">
                                         bad note
                                     </termNote>
                                 </termCompGrp>
@@ -135,10 +135,10 @@ TODO: TBXChecker doesn't verify this
                     <ntig>
                         <termGrp>
                             <term id="foo">foo</term>
-                            <termNote type="generalNote" id="bar" datatype="text" xml:lang="en" target="foo">
+                            <termNote type="generalNote" id="bar" xml:lang="en">
                                 some note
                             </termNote>
-                            <termNote type="compNote" id="baz" datatype="text" xml:lang="en" target="foo">
+                            <termNote type="compNote" id="baz" xml:lang="en">
                                 some note
                             </termNote>
                             <termCompList type="termElement">
@@ -147,7 +147,7 @@ TODO: TBXChecker doesn't verify this
                                         some
                                     </termComp>
                                     <termNoteGrp id="quz">
-                                        <termNote type="compNote" id="biz" datatype="text" xml:lang="en" target="buzz">
+                                        <termNote type="compNote" id="biz" xml:lang="en" target="buzz">
                                             some note
                                         </termNote>
                                         <note>Here is a group!</note>
@@ -172,7 +172,7 @@ TODO: TBXChecker doesn't verify this
                                     </termComp>
                                     <!-- This is disallowed at this level-->
                                     <termNoteGrp id="quz">
-                                        <termNote type="bad_cat" id="biz" datatype="text" xml:lang="en" target="buzz">
+                                        <termNote type="bad_cat" id="biz" xml:lang="en" target="buzz">
                                             some note
                                         </termNote>
                                         <note>Here is a group!</note>
@@ -221,7 +221,7 @@ TODO: TBXChecker doesn't check this
                         <termGrp>
                             <term id="foo">foo</term>
                             <termCompList type="termElement">
-                                <descrip type="general" xml:lang="en" id="desc" target="foo" datatype="text">
+                                <descrip type="general" xml:lang="en" id="desc">
                                     description
                                 </descrip>
                                 <termCompGrp>
@@ -250,7 +250,7 @@ TODO: TBXChecker doesn't check this
 --- good
             <termEntry id="entry">
 
-                <descrip type="general" xml:lang="en" id="desc" target="entry" datatype="text">
+                <descrip type="general" xml:lang="en" id="desc" target="entry">
                     description
                 </descrip>
 
@@ -262,7 +262,7 @@ TODO: TBXChecker doesn't check this
             </termEntry>
 --- bad
             <termEntry id="entry">
-                <descrip type="termLangSet" xml:lang="en" id="desc" target="entry" datatype="text">
+                <descrip type="termLangSet" xml:lang="en" id="desc" target="entry">
                     description
                 </descrip>
 
@@ -288,7 +288,7 @@ TODO: TBXChecker doesn't check this
 --- good
             <termEntry id="entry">
                 <langSet xml:lang="en" id="langSet">
-                    <descrip type="general" xml:lang="en" id="desc" target="entry" datatype="text">
+                    <descrip type="general" xml:lang="en" id="desc" target="entry">
                         description
                     </descrip>
                     <tig>
@@ -299,7 +299,7 @@ TODO: TBXChecker doesn't check this
 --- bad
             <termEntry id="entry">
                 <langSet xml:lang="en" id="langSet">
-                    <descrip type="termTermEntry" xml:lang="en" id="desc" target="entry" datatype="text">
+                    <descrip type="termTermEntry" xml:lang="en" id="desc" target="entry">
                         description
                     </descrip>
                     <tig>
@@ -325,7 +325,7 @@ TODO: TBXChecker doesn't check this
                 <langSet xml:lang="en" id="langSet">
                     <tig>
                         <term id="term1">foo bar</term>
-                        <descrip type="general" xml:lang="en" id="desc" target="entry" datatype="text">
+                        <descrip type="general" xml:lang="en" id="desc" target="entry">
                             description
                         </descrip>
                     </tig>
@@ -336,7 +336,7 @@ TODO: TBXChecker doesn't check this
                 <langSet xml:lang="en" id="langSet">
                     <tig>
                         <term id="term1">foo bar</term>
-                        <descrip type="termEntryLangSet" xml:lang="en" id="desc" target="entry" datatype="text">
+                        <descrip type="termEntryLangSet" xml:lang="en" id="desc" target="entry">
                             description
                         </descrip>
                     </tig>
@@ -362,7 +362,7 @@ TODO: TBXChecker doesn't check this
                         <termGrp>
                             <term id="term1">foo bar</term>
                         </termGrp>
-                        <descrip type="general" xml:lang="en" id="desc" target="entry" datatype="text">
+                        <descrip type="general" xml:lang="en" id="desc" target="entry">
                             description
                         </descrip>
                     </ntig>
@@ -375,7 +375,7 @@ TODO: TBXChecker doesn't check this
                         <termGrp>
                             <term id="term1">foo bar</term>
                         </termGrp>
-                        <descrip type="termEntryLangSet" xml:lang="en" id="desc" target="entry" datatype="text">
+                        <descrip type="termEntryLangSet" xml:lang="en" id="desc" target="entry">
                             description
                         </descrip>
                     </ntig>
@@ -396,7 +396,7 @@ TODO: TBXChecker doesn't check this
 --- good
             <termEntry id="entry">
                 <descripGrp>
-                    <descrip type="general" xml:lang="en" id="desc" target="entry" datatype="text">
+                    <descrip type="general" xml:lang="en" id="desc" target="entry">
                         description
                     </descrip>
                 </descripGrp>
@@ -410,7 +410,7 @@ TODO: TBXChecker doesn't check this
 --- bad
             <termEntry id="entry">
                 <descripGrp>
-                    <descrip type="termLangSet" xml:lang="en" id="desc" target="entry" datatype="text">
+                    <descrip type="termLangSet" xml:lang="en" id="desc" target="entry">
                         description
                     </descrip>
                 </descripGrp>
@@ -438,7 +438,7 @@ TODO: TBXChecker doesn't check this
             <termEntry id="entry">
                 <langSet xml:lang="en" id="langSet">
                     <descripGrp>
-                        <descrip type="general" xml:lang="en" id="desc" target="entry" datatype="text">
+                        <descrip type="general" xml:lang="en" id="desc" target="entry">
                             description
                         </descrip>
                     </descripGrp>
@@ -451,7 +451,7 @@ TODO: TBXChecker doesn't check this
             <termEntry id="entry">
                 <langSet xml:lang="en" id="langSet">
                     <descripGrp>
-                        <descrip type="termTermEntry" xml:lang="en" id="desc" target="entry" datatype="text">
+                        <descrip type="termTermEntry" xml:lang="en" id="desc" target="entry">
                             description
                         </descrip>
                     </descripGrp>
@@ -479,7 +479,7 @@ TODO: TBXChecker doesn't check this
                     <tig>
                         <term id="term1">foo bar</term>
                         <descripGrp>
-                            <descrip type="general" xml:lang="en" id="desc" target="entry" datatype="text">
+                            <descrip type="general" xml:lang="en" id="desc" target="entry">
                                 description
                             </descrip>
                         </descripGrp>
@@ -492,7 +492,7 @@ TODO: TBXChecker doesn't check this
                     <tig>
                         <term id="term1">foo bar</term>
                         <descripGrp>
-                            <descrip type="termEntryLangSet" xml:lang="en" id="desc" target="entry" datatype="text">
+                            <descrip type="termEntryLangSet" xml:lang="en" id="desc" target="entry">
                                 description
                             </descrip>
                         </descripGrp>
@@ -520,7 +520,7 @@ TODO: TBXChecker doesn't check this
                             <term id="term1">foo bar</term>
                         </termGrp>
                         <descripGrp>
-                            <descrip type="general" xml:lang="en" id="desc" target="entry" datatype="text">
+                            <descrip type="general" xml:lang="en" id="desc" target="entry">
                                 description
                             </descrip>
                         </descripGrp>
@@ -535,7 +535,7 @@ TODO: TBXChecker doesn't check this
                             <term id="term1">foo bar</term>
                         </termGrp>
                         <descripGrp>
-                            <descrip type="termEntryLangSet" xml:lang="en" id="desc" target="entry" datatype="text">
+                            <descrip type="termEntryLangSet" xml:lang="en" id="desc" target="entry">
                                 description
                             </descrip>
                         </descripGrp>
@@ -585,16 +585,16 @@ TODO: TBXChecker doesn't check this
             <termEntry id="entry">
 
                 <!-- Descrips allowed in termEntry level -->
-                <descrip type="general" xml:lang="en" id="desc1" target="entry" datatype="text">
+                <descrip type="general" xml:lang="en" id="desc1" target="entry">
                     description
                 </descrip>
-                <descrip type="termEntryLangSet" xml:lang="en" id="desc2" target="entry" datatype="text">
+                <descrip type="termEntryLangSet" xml:lang="en" id="desc2" target="entry">
                     description
                 </descrip>
-                <descrip type="termEntryTerm" xml:lang="en" id="desc3" target="entry" datatype="text">
+                <descrip type="termEntryTerm" xml:lang="en" id="desc3" target="entry">
                     description
                 </descrip>
-                <descrip type="termEntry" xml:lang="en" id="desc4" target="entry" datatype="text">
+                <descrip type="termEntry" xml:lang="en" id="desc4" target="entry">
                     description
                 </descrip>
                 <!-- End descrips -->
@@ -602,16 +602,16 @@ TODO: TBXChecker doesn't check this
                 <langSet xml:lang="en" id="langSet">
 
                     <!-- Descrips allowed in langSet level -->
-                    <descrip type="general" xml:lang="en" id="desc9" target="langSet" datatype="text">
+                    <descrip type="general" xml:lang="en" id="desc9" target="langSet">
                         description
                     </descrip>
-                    <descrip type="termEntryLangSet" xml:lang="en" id="desc10" target="langSet" datatype="text">
+                    <descrip type="termEntryLangSet" xml:lang="en" id="desc10" target="langSet">
                         description
                     </descrip>
-                    <descrip type="termLangSet" xml:lang="en" id="desc11" target="langSet" datatype="text">
+                    <descrip type="termLangSet" xml:lang="en" id="desc11" target="langSet">
                         description
                     </descrip>
-                    <descrip type="langSet" xml:lang="en" id="desc12" target="langSet" datatype="text">
+                    <descrip type="langSet" xml:lang="en" id="desc12" target="langSet">
                         description
                     </descrip>
                     <!-- End descrips -->
@@ -620,16 +620,16 @@ TODO: TBXChecker doesn't check this
                         <term id="term1">foo bar</term>
 
                         <!-- Descrips allowed in term level -->
-                        <descrip type="general" xml:lang="en" id="desc17" target="term1" datatype="text">
+                        <descrip type="general" xml:lang="en" id="desc17" target="term1">
                             description
                         </descrip>
-                        <descrip type="termEntryTerm" xml:lang="en" id="desc18" target="term1" datatype="text">
+                        <descrip type="termEntryTerm" xml:lang="en" id="desc18" target="term1">
                             description
                         </descrip>
-                        <descrip type="termLangSet" xml:lang="en" id="desc19" target="term1" datatype="text">
+                        <descrip type="termLangSet" xml:lang="en" id="desc19" target="term1">
                             description
                         </descrip>
-                        <descrip type="term" xml:lang="en" id="desc20" target="term1" datatype="text">
+                        <descrip type="term" xml:lang="en" id="desc20" target="term1">
                             description
                         </descrip>
                         <!-- End descrips -->
@@ -642,16 +642,16 @@ TODO: TBXChecker doesn't check this
                         </termGrp>
 
                         <!-- Descrips allowed in term level -->
-                        <descrip type="general" xml:lang="en" id="desc25" target="ntig" datatype="text">
+                        <descrip type="general" xml:lang="en" id="desc25" target="ntig">
                             description
                         </descrip>
-                        <descrip type="termEntryTerm" xml:lang="en" id="desc26" target="ntig" datatype="text">
+                        <descrip type="termEntryTerm" xml:lang="en" id="desc26" target="ntig">
                             description
                         </descrip>
-                        <descrip type="termLangSet" xml:lang="en" id="desc27" target="ntig" datatype="text">
+                        <descrip type="termLangSet" xml:lang="en" id="desc27" target="ntig">
                             description
                         </descrip>
-                        <descrip type="term" xml:lang="en" id="desc28" target="ntig" datatype="text">
+                        <descrip type="term" xml:lang="en" id="desc28" target="ntig">
                             description
                         </descrip>
                         <!-- End descrips -->
@@ -704,22 +704,22 @@ TODO: TBXChecker doesn't check this
                 <!-- DescripGrps allowed in termEntry level -->
 
                 <descripGrp>
-                    <descrip type="general" xml:lang="en" id="desc5" target="entry" datatype="text">
+                    <descrip type="general" xml:lang="en" id="desc5" target="entry">
                         description
                     </descrip>
                 </descripGrp>
                 <descripGrp>
-                    <descrip type="termEntryLangSet" xml:lang="en" id="desc6" target="entry" datatype="text">
+                    <descrip type="termEntryLangSet" xml:lang="en" id="desc6" target="entry">
                         description
                     </descrip>
                 </descripGrp>
                 <descripGrp>
-                    <descrip type="termEntryTerm" xml:lang="en" id="desc7" target="entry" datatype="text">
+                    <descrip type="termEntryTerm" xml:lang="en" id="desc7" target="entry">
                         description
                     </descrip>
                 </descripGrp>
                 <descripGrp>
-                    <descrip type="termEntry" xml:lang="en" id="desc8" target="entry" datatype="text">
+                    <descrip type="termEntry" xml:lang="en" id="desc8" target="entry">
                         description
                     </descrip>
                 </descripGrp>
@@ -729,22 +729,22 @@ TODO: TBXChecker doesn't check this
 
                     <!-- DescripGrps allowed in langSet level -->
                     <descripGrp>
-                        <descrip type="general" xml:lang="en" id="desc13" target="langSet" datatype="text">
+                        <descrip type="general" xml:lang="en" id="desc13" target="langSet">
                             description
                         </descrip>
                     </descripGrp>
                     <descripGrp>
-                        <descrip type="termEntryLangSet" xml:lang="en" id="desc14" target="langSet" datatype="text">
+                        <descrip type="termEntryLangSet" xml:lang="en" id="desc14" target="langSet">
                             description
                         </descrip>
                     </descripGrp>
                     <descripGrp>
-                        <descrip type="termLangSet" xml:lang="en" id="desc15" target="langSet" datatype="text">
+                        <descrip type="termLangSet" xml:lang="en" id="desc15" target="langSet">
                             description
                         </descrip>
                     </descripGrp>
                     <descripGrp>
-                        <descrip type="langSet" xml:lang="en" id="desc16" target="langSet" datatype="text">
+                        <descrip type="langSet" xml:lang="en" id="desc16" target="langSet">
                             description
                         </descrip>
                     </descripGrp>
@@ -755,22 +755,22 @@ TODO: TBXChecker doesn't check this
 
                         <!-- DescripGrps allowed in term level -->
                         <descripGrp>
-                            <descrip type="general" xml:lang="en" id="desc21" target="term1" datatype="text">
+                            <descrip type="general" xml:lang="en" id="desc21" target="term1">
                                 description
                             </descrip>
                         </descripGrp>
                         <descripGrp>
-                            <descrip type="termEntryTerm" xml:lang="en" id="desc22" target="term1" datatype="text">
+                            <descrip type="termEntryTerm" xml:lang="en" id="desc22" target="term1">
                                 description
                             </descrip>
                         </descripGrp>
                         <descripGrp>
-                            <descrip type="termLangSet" xml:lang="en" id="desc23" target="term1" datatype="text">
+                            <descrip type="termLangSet" xml:lang="en" id="desc23" target="term1">
                                 description
                             </descrip>
                         </descripGrp>
                         <descripGrp>
-                            <descrip type="term" xml:lang="en" id="desc24" target="term1" datatype="text">
+                            <descrip type="term" xml:lang="en" id="desc24" target="term1">
                                 description
                             </descrip>
                         </descripGrp>
@@ -785,22 +785,22 @@ TODO: TBXChecker doesn't check this
 
                         <!-- DescripGrps allowed in term level -->
                         <descripGrp>
-                            <descrip type="general" xml:lang="en" id="desc29" target="ntig" datatype="text">
+                            <descrip type="general" xml:lang="en" id="desc29" target="ntig">
                                 description
                             </descrip>
                         </descripGrp>
                         <descripGrp>
-                            <descrip type="termEntryTerm" xml:lang="en" id="desc30" target="ntig" datatype="text">
+                            <descrip type="termEntryTerm" xml:lang="en" id="desc30" target="ntig">
                                 description
                             </descrip>
                         </descripGrp>
                         <descripGrp>
-                            <descrip type="termLangSet" xml:lang="en" id="desc31" target="ntig" datatype="text">
+                            <descrip type="termLangSet" xml:lang="en" id="desc31" target="ntig">
                                 description
                             </descrip>
                         </descripGrp>
                         <descripGrp>
-                            <descrip type="term" xml:lang="en" id="desc32" target="ntig" datatype="text">
+                            <descrip type="term" xml:lang="en" id="desc32" target="ntig">
                                 description
                             </descrip>
                         </descripGrp>
