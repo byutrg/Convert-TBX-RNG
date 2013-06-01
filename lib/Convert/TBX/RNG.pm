@@ -52,7 +52,6 @@ sub generate_rng {
     }
     my $xcs = TBX::XCS->new();
     if ( $args{xcs_file} ) {
-      warn $args{xcs_file};
         $xcs->parse( file => $args{xcs_file} );
     }
     else {
@@ -117,7 +116,7 @@ sub _constrain_meta_cats {
       )
     {
         my $elt = $twig->get_xpath(
-          "//*[\@xml:id='$meta_cat.element']", 0) or die "failed to find $meta_cat.element";
+          "//*[\@xml:id='$meta_cat.element']", 0);
         _edit_meta_cat($elt, $data_cats->{$meta_cat});
 
         #we no longer use the attlists
@@ -227,7 +226,7 @@ sub _constrain_termNote {
 
     #elements present at the two levels
     my $termNote_elt = $twig->get_xpath(
-            '//*[@xml:id="termNote.element"]', 0) or die 'coulnd"t find termNote';
+            '//*[@xml:id="termNote.element"]', 0);
     my $termNote_termCompGrp_elt = $twig->get_xpath(
             '//*[@xml:id="termComp.termNote.element"]', 0);
 
@@ -255,11 +254,11 @@ sub _constrain_descrip {
 
     # elements present at the three levels
     my $term_descrip_elt = $twig->get_xpath(
-            '//*[@xml:id="term.descrip.element"]', 0) or die q(couldn't find it!);
+            '//*[@xml:id="term.descrip.element"]', 0);
     my $langSet_descrip_elt = $twig->get_xpath(
-            '//*[@xml:id="langSet.descrip.element"]', 0) or die q(couldn't find it!);
+            '//*[@xml:id="langSet.descrip.element"]', 0);
     my $termEntry_descrip_elt = $twig->get_xpath(
-            '//*[@xml:id="termEntry.descrip.element"]', 0) or die q(couldn't find it!);
+            '//*[@xml:id="termEntry.descrip.element"]', 0);
 
     #disallow content if none specified
     unless ( $data_cat_list ) {
