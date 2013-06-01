@@ -302,7 +302,7 @@ sub _get_rng_attribute {
 sub _get_rng_picklist {
     my ($picklist) = @_;
     my $choice = XML::Twig::Elt->new('choice');
-    for my $value ($picklist) {
+    for my $value (@$picklist) {
         XML::Twig::Elt->new( 'value', $value )->paste($choice);
     }
     return $choice;
