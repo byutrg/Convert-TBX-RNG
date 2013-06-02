@@ -18,7 +18,6 @@ my $temp_xcs = path($corpus_dir, 'temp.xcs');
 sub compare_validation {
     ($self, @_) = find_my_self($self, @_);
     my ($jing, $tbx_string, $should_pass) = @_;
-    warn ref $jing;
 
     state $temp_tbx = File::Temp->new(
         TEMPLATE => 'tbx.temp.XXXX',
@@ -54,7 +53,7 @@ sub remove_temps {
 1;
 
 package t::TestRNG::Filter;
-use Test::Base::Filter -base;
+use Test::Base::Filter -Base;
 use Data::Section::Simple qw (get_data_section);
 use File::Temp;
 use File::Slurp;
@@ -62,9 +61,8 @@ use File::Temp;
 use feature 'state';
 
 #write the xcs to a temp file and return a File::Temp object
-sub write_xcs{
-    my ($self, $xcs_contents) = @_;
-    # print $$xcs_contents;
+sub write_xcs {
+    my ($xcs_contents) = @_;
     write_file($temp_xcs, $xcs_contents);
     return $temp_xcs;
 }
@@ -72,8 +70,8 @@ sub write_xcs{
 my $data = get_data_section;
 
 #create a small XCS with the input language contents
-sub xcs_with_languages{
-    my ($self, $input) = @_;
+sub xcs_with_languages {
+    my ($input) = @_;
     my $xcs = $data->{XCS};
     $xcs =~ s/DATCATS/$data->{datCat}/;
     $xcs =~ s/LANGUAGES/$input/;
@@ -81,8 +79,8 @@ sub xcs_with_languages{
 }
 
 #create a small XCS with the input datacatset contents
-sub xcs_with_datCats{
-    my ($self, $input) = @_;
+sub xcs_with_datCats {
+    my ($input) = @_;
     my $xcs = $data->{XCS};
     $xcs =~ s/LANGUAGES/$data->{languages}/;
     $xcs =~ s/DATCATS/$input/;
@@ -92,7 +90,6 @@ sub xcs_with_datCats{
 #create a small TBX with the input body contents
 sub tbx_with_body {
     my ($input) = @_;
-    # warn $input;
     my $tbx = $data->{TBX};
     $tbx =~ s/BODY/$input/;
     return \$tbx;
