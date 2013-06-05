@@ -11,7 +11,7 @@ use Data::Dumper;
 use XML::Twig;
 use File::ShareDir 'dist_dir';
 use Exporter::Easy (
-    OK => [qw(generate_rng core_structure_rng)],    #TODO: add others
+    OK => [qw(generate_rng core_structure_rng)],
 );
 
 # VERSION
