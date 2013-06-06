@@ -1,7 +1,8 @@
 #check specification of data categories
 use t::TestRNG;
 use Test::More 0.88; #TODO: removing this causes failure. why?
-plan tests => 16;
+plan tests => 17;
+use Test::NoWarnings;
 use Convert::TBX::RNG qw(generate_rng);
 use XML::Jing;
 use Path::Tiny;

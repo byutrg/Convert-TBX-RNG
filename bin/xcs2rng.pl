@@ -1,4 +1,5 @@
 #!/usr/bin/env perl
+# PODNAME: xcs2rng.pl
 #TODO: test this
 # VERSION
 # ABSTRACT: Create an RNG from an XCS file
@@ -18,10 +19,13 @@ use TBX::XCS;
 use TBX::XCS::JSON qw(xcs_from_json);
 use File::Slurp;
 
+my $rng;
 if($ARGV[0] eq '--json'){
     my $json = read_file($ARGV[1]);
     my $xcs = xcs_from_json($json);
-    generate_rng(xcs => $xcs);
+    $rng = generate_rng(xcs => $xcs);
 }else{
-    generate_rng(xcs_file => $ARGV[1]);
+    $rng = generate_rng(xcs_file => $ARGV[1]);
 }
+
+print $$rng;

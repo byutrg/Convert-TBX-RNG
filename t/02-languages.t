@@ -1,7 +1,8 @@
 #check specification of langSet languages
 use t::TestRNG;
 use Test::More 0.88;
-plan tests => 2;
+plan tests => 3;
+use Test::NoWarnings;
 use Convert::TBX::RNG qw(generate_rng);
 use XML::Jing;
 use Path::Tiny;

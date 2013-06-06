@@ -47,15 +47,17 @@ an XCS file which defines the desired dialect.
 
 sub generate_rng {
     my (%args) = @_;
-    if ( not( $args{xcs_file} || $args{xcs} ) ) {
-        croak "requires either 'xcs_file' or 'xcs' parameters";
+    if ( not( $args{xcs_file} || $args{xcs_string} || $args{xcs}) ) {
+        croak "requires either 'xcs_file', 'xcs_string' 'xcs' parameters";
     }
     my $xcs = TBX::XCS->new();
     if ( $args{xcs_file} ) {
         $xcs->parse( file => $args{xcs_file} );
     }
-    else {
-        $xcs->parse( string => $args{xcs} );
+    elsif($args{xcs_string}) {
+        $xcs->parse( string => $args{xcs_string} );
+    }else{
+        $xcs = $args{xcs};
     }
 
     my $twig = XML::Twig->new(
@@ -238,7 +240,11 @@ sub _constrain_termNote {
     }
 
     #edit the data categories for the termComp level
-    my @termComp_cats = grep { $_->{forTermComp} } @$data_cat_list;
+    my @termComp_cats = grep
+    {
+        exists $_->{forTermComp} and
+        $_->{forTermComp} eq 'yes'
+    } @$data_cat_list;
     _edit_meta_cat($termNote_termCompGrp_elt, \@termComp_cats);
 
     #edit the data categories for the other levels

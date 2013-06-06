@@ -2,7 +2,8 @@
 use strict;
 use warnings;
 use Test::More 0.88;
-plan tests => 2;
+plan tests => 3;
+use Test::NoWarnings;
 use Convert::TBX::RNG qw(core_structure_rng);
 use XML::Jing;
 use TBX::Checker qw(check);
