@@ -1,6 +1,8 @@
 Revision history for Convert-TBX-RNG
 
 {{$NEXT}}
+
+0.03      2013-06-05 23:00:38 America/Los_Angeles
     Fixed incorrect sharedir arguments
     Fixed incorrect arguments in script
 0.02      2013-06-05 21:49:12 America/Los_Angeles
