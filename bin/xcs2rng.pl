@@ -1,4 +1,6 @@
 #!/usr/bin/env perl
+use strict;
+use warnings;
 # PODNAME: xcs2rng.pl
 #TODO: test this
 # VERSION
