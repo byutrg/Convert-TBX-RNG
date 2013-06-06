@@ -1,6 +1,7 @@
 Revision history for Convert-TBX-RNG
 
 {{$NEXT}}
-
+    Update forTermComp to match update in TBX::XCS
+    Added conversion script
 0.01      2013-05-31 18:16:26 America/Los_Angeles
 	initial release
