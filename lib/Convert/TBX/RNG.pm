@@ -47,8 +47,8 @@ an XCS file which defines the desired dialect.
 
 sub generate_rng {
     my (%args) = @_;
-    if ( not( $args{xcs_file} || $args{xcs_string} || $args{xcs}) ) {
-        croak "requires either 'xcs_file', 'xcs_string' 'xcs' parameters";
+    if ( not( $args{xcs_file} || $args{xcs_string} || $args{xcs} ) ) {
+        croak "requires either 'xcs_file', 'xcs_string' or 'xcs' parameters";
     }
     my $xcs = TBX::XCS->new();
     if ( $args{xcs_file} ) {
@@ -340,7 +340,7 @@ sub core_structure_rng {
 }
 
 sub _core_structure_rng_location {
-    return path( dist_dir('XML-TBX-Dialect'), 'TBXcoreStructV02.rng' );
+    return path( dist_dir('Convert-TBX-RNG'), 'TBXcoreStructV02.rng' );
 }
 
 1;
