@@ -27,7 +27,7 @@ if($ARGV[0] eq '--json'){
     my $xcs = xcs_from_json($json);
     $rng = generate_rng(xcs => $xcs);
 }else{
-    $rng = generate_rng(xcs_file => $ARGV[1]);
+    $rng = generate_rng(xcs_file => $ARGV[0]);
 }
 
 print $$rng;
