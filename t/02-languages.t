@@ -4,7 +4,6 @@ use Test::More 0.88;
 plan tests => 3;
 use Test::NoWarnings;
 use Convert::TBX::RNG qw(generate_rng);
-use XML::Jing;
 use Path::Tiny;
 use FindBin qw($Bin);
 use File::Slurp;
@@ -27,17 +26,13 @@ for my $block(blocks){
 
     #create an RNG and write it to a temporary file
     my $rng = generate_rng(xcs_file => $block->xcs);
-    my $rng_tmp = File::Temp->new();
-    write_file($rng_tmp, $rng);
-    # print $$rng;
-    my $jing = XML::Jing->new($rng_tmp->filename);
 
     for my $good( $block->good ){
-        compare_validation($jing, $good, 1);
+        compare_validation($rng, $good, 1);
     }
 
     for my $bad( $block->bad ){
-        compare_validation($jing, $bad, 0);
+        compare_validation($rng, $bad, 0);
     }
 }
 

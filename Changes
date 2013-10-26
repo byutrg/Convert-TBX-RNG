@@ -1,7 +1,7 @@
 Revision history for Convert-TBX-RNG
 
 {{$NEXT}}
-
+    Use XML::LibXML::RelaxNG instead of XML::Jing to speed up test suite
 0.03      2013-06-05 23:00:38 America/Los_Angeles
     Fixed incorrect sharedir arguments
     Fixed incorrect arguments in script

@@ -2,6 +2,7 @@ package t::TestRNG;
 use Test::Base -Base;
 use Test::More 0.88;
 use TBX::Checker qw(check);
+use XML::LibXML;
 use File::Slurp;
 use File::Temp;
 use FindBin qw($Bin);
@@ -12,13 +13,15 @@ our @EXPORT = qw(compare_validation remove_temps);
 my $corpus_dir = path($Bin, 'corpus');
 my $temp_xcs = path($corpus_dir, 'temp.xcs');
 
-# pass in a pre-loaded XML::Jing, the name of the TBX file to check, and a boolean (expect to pass?)
-# representing whether the file should be valid
-#  Tests for TBX validity via $jing and via TBX::Checker
+# Pass in an RNG string pointer, a TBX string pointer,
+# and a boolean indicating whether the TBX file should be valid.
+# This tests for TBX validity via Relax NG and TBX::Checker
 sub compare_validation {
     ($self, @_) = find_my_self($self, @_);
-    my ($jing, $tbx_string, $should_pass) = @_;
+    my ($rng_string, $tbx_string, $should_pass) = @_;
 
+    # store TBX text in a temporary file so that TBX::Checker can
+    # use it
     state $temp_tbx = File::Temp->new(
         TEMPLATE => 'tbx.temp.XXXX',
         DIR => $corpus_dir,
@@ -37,9 +40,18 @@ sub compare_validation {
                 'XCS adherence was the cause of failure');
         }
 
-        my $error = $jing->validate($temp_tbx->filename);
-        #undefined error means it's valid, defined invalid
+        my $rng_doc = XML::LibXML->load_xml(string => $rng_string);
+        my $rng = XML::LibXML::RelaxNG->new( DOM => $rng_doc );
+        my $doc = XML::LibXML->load_xml(string => $tbx_string);
+        my $error;
+
+        if(!eval { $rng->validate( $doc ); 1;} ){
+            $error = $@;
+        }
+
+        # undefined error means it's valid, defined invalid
         ok((defined($error) xor $should_pass), 'Generated RNG')
+            # if there should have been no error but there was, print it
             or ($error and note $error);
     };
     # unlink $temp_tbx;
