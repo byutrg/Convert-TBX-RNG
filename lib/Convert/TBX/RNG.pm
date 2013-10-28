@@ -87,7 +87,6 @@ sub _constrain_languages {
 
     #make an RNG choice for the xml:lang attribute of langSet
     my $choice    = XML::Twig::Elt->new('choice');
-    my @lang_spec = ('choice');
     for my $abbrv ( sort keys %$languages ) {
         XML::Twig::Elt->new( 'value', $abbrv )->paste($choice);
     }
@@ -100,7 +99,7 @@ sub _constrain_languages {
 
 # add ref object choices to back matter
 sub _constrain_ref_objects {
-    my ( $rng, $ref_objects ) = @_;
+    # my ( $rng, $ref_objects ) = @_;
 
     #unimplemented
     return;
