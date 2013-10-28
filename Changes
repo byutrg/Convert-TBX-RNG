@@ -1,6 +1,8 @@
 Revision history for Convert-TBX-RNG
 
 {{$NEXT}}
+
+0.04      2013-10-28 15:43:15 America/Los_Angeles
     Use XML::LibXML::RelaxNG instead of XML::Jing to speed up test suite
     Updated repository information
     Removed unused variables
